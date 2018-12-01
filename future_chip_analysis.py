@@ -6,6 +6,11 @@ import numpy as np
 
 
 class future_chip_analysis():
+    """
+    :param date: query date, for example: '2018/11/29'
+    :type date: str
+    """
+
     def __init__(self, date=None):
         if date is None:
             self._date = datetime.now().strftime("%Y/%m/%d")
@@ -18,6 +23,10 @@ class future_chip_analysis():
         self._taifex_url = 'http://www.taifex.com.tw/enl/eng3'
 
     def get_future(self, target):
+        """
+        :param target: 'TX' or 'MTX'
+        :type target: str
+        """
         url = '{}/futDataDown?down_type=1&commodity_id={}&{}&{}'.format(
             self._taifex_url, target, self._start_date, self._end_date)
         self.future = pd.read_csv(url, index_col=False)
@@ -35,15 +44,15 @@ class future_chip_analysis():
     def get_twse_summary(self):
         url = 'http://www.twse.com.tw/en/exchangeReport/MI_INDEX?response=json&date={}&type=MS'.format(
             self._date.replace('/', ''))
-        TAIEX = requests.get(url)
-        taiex = pd.DataFrame(
-            TAIEX.json()['data1'],
+        r = requests.get(url)
+        twse_summary = pd.DataFrame(
+            r.json()['data1'],
             columns=['index', 'close', 'dir', 'change', 'change_percent'])
-        taiex.change[taiex.change == '--'] = 0
-        taiex.change_percent[taiex.change_percent == '--'] = 0
-        taiex.change = taiex.change.astype(float) * np.sign(
-            taiex.change_percent.astype(float))
-        self._taiex = taiex.drop(columns='dir')
+        twse_summary.change[twse_summary.change == '--'] = 0
+        twse_summary.change_percent[twse_summary.change_percent == '--'] = 0
+        twse_summary.change = twse_summary.change.astype(float) * np.sign(
+            twse_summary.change_percent.astype(float))
+        self._twse_summary = twse_summary.drop(columns='dir')
 
     @property
     def last(self):
@@ -60,7 +69,17 @@ class future_chip_analysis():
     def major_institutional_trader_volume(self):
         return sum(self._major_institutional_trader['Open Interest (Long)'])
 
+    @property
+    def taifex_close(self):
+        return float(self._twse_summary.close.iloc[1].replace(',', ''))
+
     def putcall(self, putcall, contract):
+        """
+        :param putcall: "Put" or "Call"
+        :type putcall: str
+        :param contract: input "month"/"week" would get contract data of this month/week
+        :type contract: str
+        """
         if contract == 'week':
             deadline = self.option['Contract Month(Week)'].unique()[0]
         elif contract == 'month':
