@@ -33,8 +33,8 @@ class future_chip_analysis():
         self._major_institutional_trader = pd.read_csv(url, index_col=False)
 
     def get_twse_summary(self):
-        url = 'http://www.twse.com.tw/en/exchangeReport/MI_INDEX?response=json&date=' + \
-                self._date.replace('/','') + '&type=MS'
+        url = 'http://www.twse.com.tw/en/exchangeReport/MI_INDEX?response=json&date={}&type=MS'.format(
+            self._date.replace('/', ''))
         TAIEX = requests.get(url)
         taiex = pd.DataFrame(
             TAIEX.json()['data1'],
