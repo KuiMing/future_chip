@@ -1,8 +1,10 @@
 from datetime import datetime
 import urllib
+import logging
 import pandas as pd
 import requests
 import numpy as np
+from logger import logger
 
 
 class future_chip_analysis():
@@ -11,11 +13,8 @@ class future_chip_analysis():
     :type date: str
     """
 
-    def __init__(self, date=None):
-        if date is None:
-            self._date = datetime.now().strftime("%Y/%m/%d")
-        else:
-            self._date = date
+    def __init__(self, date):
+        self._date = date
         self._start_date = urllib.parse.urlencode({
             "queryStartDate": self._date
         })
@@ -96,3 +95,14 @@ class future_chip_analysis():
         strike[strike > 0] = 0
         y = strike + settlemet.astype(float)
         return sum(y[y > 0])
+
+    def __call__(self):
+        try:
+            self.get_future('TX')
+        except:
+            logger.debug('{} is not trading date, please change.'.format(
+                self._date))
+            return
+        self.get_option()
+        self.get_major_institutional_trader()
+        self.get_twse_summary()
