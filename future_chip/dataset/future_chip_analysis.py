@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 import requests
 import numpy as np
-from .logger import logger
+from ..logger import logger
 
 
 class future_chip_analysis():
