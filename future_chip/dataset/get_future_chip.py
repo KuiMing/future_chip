@@ -28,7 +28,7 @@ class GetFutureChip():
         """
         url = '{}/futDataDown?down_type=1&commodity_id={}&{}&{}'.format(
             self._taifex_url, target, self._start_date, self._end_date)
-        self.future = pd.read_csv(url, index_col=False)
+        return pd.read_csv(url, index_col=False)
 
     def get_option(self):
         url = '{}/optDataDown?down_type=1&commodity_id=TXO&{}&{}'.format(
@@ -60,6 +60,7 @@ class GetFutureChip():
             logger.debug('{} is not trading date, please change.'.format(
                 self._date))
             return
-        self.get_future('TX')
+        self.tx = self.get_future('TX')
+        self.mtx = self.get_future('MTX')
         self.get_option()
         self.get_major_institutional_trader()
