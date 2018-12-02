@@ -10,19 +10,47 @@ class FutureTrasformPreprocessor(GetFutureChip):
         return float(self.future['last'].iloc[0])
 
     @property
-    def volume(self):
-        volume = self.future['open_interest'][self.future['Trading Session'] ==
+    def total_volume(self):
+        volume = self.tx['open_interest'][self.tx['Trading Session'] ==
                                               'Regular']
         volume[volume == '-'] = 0
         return sum(volume.astype(float))
+    
+    @property
+    def deferred_volume(self):
+        return float(self.tx.open_interest[2])
+    
+    @property
+    def nearby_volume(self):
+        return float(self.tx.open_interest[0])
 
     @property
-    def major_institutional_trader_volume(self):
+    def institutional_long_volume(self):
         return sum(self._major_institutional_trader['Open Interest (Long)'])
+
+    @property
+    def institutional_short_volume(self):
+        return sum(self._major_institutional_trader['Open Interest (Short)'])
 
     @property
     def taifex_close(self):
         return float(self._twse_summary.close.iloc[1].replace(',', ''))
+
+    @property
+    def month_put_chip(self):
+        return self.option_chip('Put', "month")
+
+    @property
+    def month_call_chip(self):
+        return self.option_chip('Call', "month")
+
+    @property
+    def week_put_chip(self):
+        return self.option_chip('Put', "week")
+
+    @property
+    def week_call_chip(self):
+        return self.option_chip('Call', "week")
 
     def option_chip(self, putcall, contract):
         """
@@ -33,8 +61,10 @@ class FutureTrasformPreprocessor(GetFutureChip):
         """
         if contract == 'week':
             deadline = self.option['Contract Month(Week)'].unique()[0]
+            self.future = self.mtx
         elif contract == 'month':
             deadline = self.option['Contract Month(Week)'].unique()[1]
+            self.future = self.tx
         filtered = self.option[(self.option['Call/Put'] == putcall) & \
                                 (self.option['Trading Session']=='Regular') & \
                                 (self.option['Contract Month(Week)'] == deadline)]
