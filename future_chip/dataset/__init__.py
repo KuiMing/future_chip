@@ -1,1 +1,1 @@
-from .future_chip_analysis import *
+from .get_future_chip import *
