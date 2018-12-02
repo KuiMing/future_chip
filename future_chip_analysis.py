@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 import requests
 import numpy as np
-from logger import logger
+from .logger import logger
 
 
 class future_chip_analysis():
@@ -98,11 +98,11 @@ class future_chip_analysis():
 
     def __call__(self):
         try:
-            self.get_future('TX')
+            self.get_twse_summary()
         except:
             logger.debug('{} is not trading date, please change.'.format(
                 self._date))
             return
+        self.get_future('TX')
         self.get_option()
         self.get_major_institutional_trader()
-        self.get_twse_summary()
