@@ -1,3 +1,4 @@
+from datetime import datetime
 from ..dataset import GetFutureChip
 
 
@@ -6,20 +7,26 @@ class FutureTrasformPreprocessor(GetFutureChip):
         super(FutureTrasformPreprocessor, self).__init__(date)
 
     @property
+    def is_settlement_date(self):
+        return datetime.strptime(self._date, "%Y/%m/%d").weekday() == 2
+
+    @property
     def last(self):
-        return float(self.future['last'].iloc[0])
+        if float(self.future['settlement_price'].iloc[0]) == 0:
+            return float(self.future['settlement_price'].iloc[2])
+        return float(self.future['settlement_price'].iloc[0])
 
     @property
     def total_volume(self):
         volume = self.tx['open_interest'][self.tx['Trading Session'] ==
-                                              'Regular']
+                                          'Regular']
         volume[volume == '-'] = 0
         return sum(volume.astype(float))
-    
+
     @property
     def deferred_volume(self):
         return float(self.tx.open_interest[2])
-    
+
     @property
     def nearby_volume(self):
         return float(self.tx.open_interest[0])
@@ -59,11 +66,15 @@ class FutureTrasformPreprocessor(GetFutureChip):
         :param contract: input "month"/"week" would get contract data of this month/week
         :type contract: str
         """
+        if self.is_settlement_date:
+            index = 1
+        else:
+            index = 0
         if contract == 'week':
-            deadline = self.option['Contract Month(Week)'].unique()[0]
+            deadline = self.option['Contract Month(Week)'].unique()[index]
             self.future = self.mtx
         elif contract == 'month':
-            deadline = self.option['Contract Month(Week)'].unique()[1]
+            deadline = self.option['Contract Month(Week)'].unique()[index + 1]
             self.future = self.tx
         filtered = self.option[(self.option['Call/Put'] == putcall) & \
                                 (self.option['Trading Session']=='Regular') & \
