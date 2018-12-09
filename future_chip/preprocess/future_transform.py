@@ -1,4 +1,5 @@
 from datetime import datetime
+from math import ceil, floor
 from ..dataset import GetFutureChip
 
 
@@ -63,6 +64,38 @@ class FutureTrasformPreprocessor(GetFutureChip):
         return float(self._twse_summary.close.iloc[1].replace(',', ''))
 
     @property
+    def at_the_money(self):
+        return [
+            floor(self.taifex_close / 100) * 100,
+            ceil(self.taifex_close / 100) * 100
+        ]
+
+    @property
+    def deadline(self):
+        index = [0, 1]
+        deadline = self.option['Contract Month(Week)'].unique()[
+            index[self.is_settlement_date] + 1]
+        return deadline
+
+    @property
+    def call_market(self):
+        call = self.option[['Strike Price', 'OI']][(self.option['Call/Put'] == 'Call') & \
+        (self.option['Contract Month(Week)'] == self.deadline) & \
+        (self.option['Trading Session'] == 'Regular') & \
+        (self.option['Strike Price'] >= self.at_the_money[0]) & \
+        (self.option['Strike Price'] <= self.at_the_money[0] + 700)].astype(float)
+        return call
+
+    @property
+    def put_market(self):
+        put = self.option[['Strike Price', 'OI']][(self.option['Call/Put'] == 'Put') & \
+        (self.option['Contract Month(Week)'] == self.deadline) & \
+        (self.option['Trading Session'] == 'Regular') & \
+        (self.option['Strike Price'] <= self.at_the_money[1]) & \
+        (self.option['Strike Price'] >= self.at_the_money[1] - 700)].astype(float).sort_values('Strike Price', ascending=False)
+        return put
+
+    @property
     def month_put_chip(self):
         return self.option_chip('Put', "month")
 
@@ -90,8 +123,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
             deadline = self.option['Contract Month(Week)'].unique()[index[
                 self.is_settlement_date]]
         elif contract == 'month':
-            deadline = self.option['Contract Month(Week)'].unique()[
-                index[self.is_settlement_date] + 1]
+            deadline = self.deadline
 
         filtered = self.option[(self.option['Call/Put'] == putcall) & \
                                 (self.option['Trading Session']=='Regular') & \
