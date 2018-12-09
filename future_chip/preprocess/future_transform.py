@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from math import ceil, floor
 from ..dataset import GetFutureChip
 
@@ -84,6 +84,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
         (self.option['Trading Session'] == 'Regular') & \
         (self.option['Strike Price'] >= self.at_the_money[0]) & \
         (self.option['Strike Price'] <= self.at_the_money[0] + 700)].astype(float)
+        call = call.reset_index(drop=True)
         return call
 
     @property
@@ -93,6 +94,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
         (self.option['Trading Session'] == 'Regular') & \
         (self.option['Strike Price'] <= self.at_the_money[1]) & \
         (self.option['Strike Price'] >= self.at_the_money[1] - 700)].astype(float).sort_values('Strike Price', ascending=False)
+        put = put.reset_index(drop=True)
         return put
 
     @property
@@ -138,3 +140,44 @@ class FutureTrasformPreprocessor(GetFutureChip):
         strike[strike > 0] = 0
         y = strike + settlemet.astype(float)
         return round(sum(y[y > 0]), 1)
+    
+    @property
+    def last_option(self):
+        output = []
+        count = 1
+        while len(output) == 0:
+            date = (datetime.strptime(self._date, '%Y/%m/%d') -
+                    timedelta(days=count)).strftime('%Y/%m/%d')
+            x = GetFutureChip(date)
+            x.get_option()
+            output = x.option
+            count += 1
+        return output
+
+    def call_processed(self):
+        option = self.last_option
+        Call = self.call_market
+        Call_last = option[['Strike Price', 'OI']][(option['Call/Put'] == 'Call') & \
+                (option['Contract Month(Week)'] == self.deadline) & \
+                (option['Trading Session'] == 'Regular') & \
+                (option['Strike Price'] >= Call['Strike Price'].iloc[0]) & \
+                (option['Strike Price'] <= Call['Strike Price'].iloc[0] + 700)].astype(float)
+
+        Call_last = Call_last.reset_index(drop=True)
+        Call['OI_last'] = Call_last.OI
+        Call['diff'] = Call.OI - Call_last.OI
+        return Call
+
+    def put_processed(self):
+        option = self.last_option
+        Put = self.put_market
+        Put_last = option[['Strike Price', 'OI']][(option['Call/Put'] == 'Put') & \
+                (option['Contract Month(Week)'] == self.deadline) & \
+                (option['Trading Session'] == 'Regular') & \
+                (option['Strike Price'] <= Put['Strike Price'].iloc[0]) & \
+                (option['Strike Price'] >= Put['Strike Price'].iloc[0] - 700)].astype(float).sort_values('Strike Price', ascending=False)
+
+        Put_last = Put_last.reset_index(drop=True)
+        Put['OI_last'] = Put_last.OI
+        Put['diff'] = Put.OI - Put_last.OI
+        return Put
