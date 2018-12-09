@@ -8,13 +8,32 @@ class FutureTrasformPreprocessor(GetFutureChip):
 
     @property
     def is_settlement_date(self):
-        return datetime.strptime(self._date, "%Y/%m/%d").weekday() == 2
+        return self.is_month_settlement or self.is_week_settlement
 
     @property
-    def last(self):
-        if float(self.future['settlement_price'].iloc[0]) == 0:
-            return float(self.future['settlement_price'].iloc[2])
-        return float(self.future['settlement_price'].iloc[0])
+    def is_month_settlement(self):
+        return float(self.tx['settlement_price'].iloc[0]) == 0
+
+    @property
+    def is_week_settlement(self):
+        return float(self.mtx['settlement_price'].iloc[0]) == 0
+
+    @property
+    def is_before_settlement(self):
+        return self.deferred_volume / self.total_volume >= 0.4
+
+    @property
+    def settlement_price(self):
+        price = dict()
+        if self.is_week_settlement:
+            price['week'] = float(self.mtx['settlement_price'].iloc[2])
+        else:
+            price['week'] = float(self.mtx['settlement_price'].iloc[0])
+        if self.is_month_settlement:
+            price['month'] = float(self.tx['settlement_price'].iloc[2])
+        else:
+            price['month'] = float(self.tx['settlement_price'].iloc[0])
+        return price
 
     @property
     def total_volume(self):
@@ -66,25 +85,24 @@ class FutureTrasformPreprocessor(GetFutureChip):
         :param contract: input "month"/"week" would get contract data of this month/week
         :type contract: str
         """
-        if self.is_settlement_date:
-            index = 1
-        else:
-            index = 0
+        index = [0, 1]
         if contract == 'week':
-            deadline = self.option['Contract Month(Week)'].unique()[index]
-            self.future = self.mtx
+            deadline = self.option['Contract Month(Week)'].unique()[index[
+                self.is_settlement_date]]
         elif contract == 'month':
-            deadline = self.option['Contract Month(Week)'].unique()[index + 1]
-            self.future = self.tx
+            deadline = self.option['Contract Month(Week)'].unique()[
+                index[self.is_settlement_date] + 1]
+
         filtered = self.option[(self.option['Call/Put'] == putcall) & \
                                 (self.option['Trading Session']=='Regular') & \
                                 (self.option['Contract Month(Week)'] == deadline)]
         strike = filtered['Strike Price']
         settlemet = filtered['Settlement Price']
+        settlement_price = self.settlement_price
         if putcall == 'Put':
-            strike = self.last - strike
+            strike = settlement_price[contract] - strike
         elif putcall == 'Call':
-            strike = strike - self.last
+            strike = strike - settlement_price[contract]
         strike[strike > 0] = 0
         y = strike + settlemet.astype(float)
-        return sum(y[y > 0])
+        return round(sum(y[y > 0]), 1)
