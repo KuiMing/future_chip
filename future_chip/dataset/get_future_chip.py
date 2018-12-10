@@ -34,6 +34,10 @@ class GetFutureChip():
         url = '{}/optDataDown?down_type=1&commodity_id=TXO&{}&{}'.format(
             self._taifex_url, self._start_date, self._end_date)
         self.option = pd.read_csv(url, index_col=False)
+        self.option['Contract Month(Week)'] = [
+            str(i).rstrip().lstrip()
+            for i in self.option['Contract Month(Week)']
+        ]
 
     def get_major_institutional_trader(self):
         url = '{}/futContractsDateDown?&{}&{}&commodityId=TXF'.format(
