@@ -6,6 +6,7 @@ from ..dataset import GetFutureChip
 class FutureTrasformPreprocessor(GetFutureChip):
     def __init__(self, date):
         super(FutureTrasformPreprocessor, self).__init__(date)
+        self._last_option = self.last_option()
 
     @property
     def is_settlement_date(self):
@@ -141,7 +142,6 @@ class FutureTrasformPreprocessor(GetFutureChip):
         y = strike + settlemet.astype(float)
         return round(sum(y[y > 0]), 1)
     
-    @property
     def last_option(self):
         output = []
         count = 1
@@ -155,7 +155,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
         return output
 
     def call_processed(self):
-        option = self.last_option
+        option = self._last_option
         Call = self.call_market
         Call_last = option[['Strike Price', 'OI']][(option['Call/Put'] == 'Call') & \
                 (option['Contract Month(Week)'] == self.deadline) & \
@@ -169,7 +169,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
         return Call
 
     def put_processed(self):
-        option = self.last_option
+        option = self._last_option
         Put = self.put_market
         Put_last = option[['Strike Price', 'OI']][(option['Call/Put'] == 'Put') & \
                 (option['Contract Month(Week)'] == self.deadline) & \
