@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from math import ceil, floor
+import pandas as pd
 from ..dataset import GetFutureChip
 
 
 class FutureTrasformPreprocessor(GetFutureChip):
     def __init__(self, date):
         super(FutureTrasformPreprocessor, self).__init__(date)
-        self._last_option = self.last_option()
+        # self.last_future_option()
 
     @property
     def is_settlement_date(self):
@@ -77,24 +78,26 @@ class FutureTrasformPreprocessor(GetFutureChip):
         deadline = self.option['Contract Month(Week)'].unique()[
             index[self.is_settlement_date] + 1]
         return deadline
-
+    
     @property
     def call_market(self):
-        call = self.option[['Strike Price', 'OI']][(self.option['Call/Put'] == 'Call') & \
-        (self.option['Contract Month(Week)'] == self.deadline) & \
-        (self.option['Trading Session'] == 'Regular') & \
-        (self.option['Strike Price'] >= self.at_the_money[0]) & \
-        (self.option['Strike Price'] <= self.at_the_money[0] + 700)].astype(float)
+        option = self.option
+        call = option[['Strike Price', 'OI']][(option['Call/Put'] == 'Call') & \
+        (option['Contract Month(Week)'] == self.deadline) & \
+        (option['Trading Session'] == 'Regular') & \
+        (option['Strike Price'] >= self.at_the_money[0]) & \
+        (option['Strike Price'] <= self.at_the_money[0] + 700)].astype(float)
         call = call.reset_index(drop=True)
         return call
-
+    
     @property
     def put_market(self):
-        put = self.option[['Strike Price', 'OI']][(self.option['Call/Put'] == 'Put') & \
-        (self.option['Contract Month(Week)'] == self.deadline) & \
-        (self.option['Trading Session'] == 'Regular') & \
-        (self.option['Strike Price'] <= self.at_the_money[1]) & \
-        (self.option['Strike Price'] >= self.at_the_money[1] - 700)].astype(float).sort_values('Strike Price', ascending=False)
+        option = self.option
+        put = option[['Strike Price', 'OI']][(option['Call/Put'] == 'Put') & \
+        (option['Contract Month(Week)'] == self.deadline) & \
+        (option['Trading Session'] == 'Regular') & \
+        (option['Strike Price'] <= self.at_the_money[1]) & \
+        (option['Strike Price'] >= self.at_the_money[1] - 700)].astype(float).sort_values('Strike Price', ascending=False)
         put = put.reset_index(drop=True)
         return put
 
@@ -115,34 +118,23 @@ class FutureTrasformPreprocessor(GetFutureChip):
         return self.option_chip('Call', "week")
 
     @property
-    def call_processed(self):
-        option = self._last_option
-        Call = self.call_market
-        Call_last = option[['Strike Price', 'OI']][(option['Call/Put'] == 'Call') & \
-                (option['Contract Month(Week)'] == self.deadline) & \
-                (option['Trading Session'] == 'Regular') & \
-                (option['Strike Price'] >= Call['Strike Price'].iloc[0]) & \
-                (option['Strike Price'] <= Call['Strike Price'].iloc[0] + 700)].astype(float)
-
-        Call_last = Call_last.reset_index(drop=True)
-        Call['OI_last'] = Call_last.OI
-        Call['diff'] = Call.OI - Call_last.OI
-        return Call
-
-    @property
-    def put_processed(self):
-        option = self._last_option
-        Put = self.put_market
-        Put_last = option[['Strike Price', 'OI']][(option['Call/Put'] == 'Put') & \
-                (option['Contract Month(Week)'] == self.deadline) & \
-                (option['Trading Session'] == 'Regular') & \
-                (option['Strike Price'] <= Put['Strike Price'].iloc[0]) & \
-                (option['Strike Price'] >= Put['Strike Price'].iloc[0] - 700)].astype(float).sort_values('Strike Price', ascending=False)
-
-        Put_last = Put_last.reset_index(drop=True)
-        Put['OI_last'] = Put_last.OI
-        Put['diff'] = Put.OI - Put_last.OI
-        return Put
+    def future_list(self):
+        future = pd.DataFrame({
+            'item': [
+                'total volume', 'nearby volume', 'deferred volume', 
+                'institutional long volume', "institutional short volume",
+                "noninstitutional long volume", "noninstitutional short volume"
+                ],
+            'volume':[
+                self.total_volume,
+                self.nearby_volume,
+                self.deferred_volume,
+                self.institutional_long_volume,
+                self.institutional_short_volume,
+                self.total_volume - self.institutional_long_volume,
+                self.total_volume - self.institutional_short_volume]
+                })
+        return future
 
     def option_chip(self, putcall, contract):
         """
@@ -172,14 +164,15 @@ class FutureTrasformPreprocessor(GetFutureChip):
         y = strike + settlemet.astype(float)
         return round(sum(y[y > 0]), 1)
 
-    def last_option(self):
-        output = []
-        count = 1
-        while len(output) == 0:
-            date = (datetime.strptime(self._date, '%Y/%m/%d') -
-                    timedelta(days=count)).strftime('%Y/%m/%d')
-            x = GetFutureChip(date)
-            x.get_option()
-            output = x.option
-            count += 1
-        return output
+    # def last_future_option(self):
+    #     output = []
+    #     count = 1
+    #     while len(output) == 0:
+    #         date = (datetime.strptime(self._date, '%Y/%m/%d') -
+    #                 timedelta(days=count)).strftime('%Y/%m/%d')
+    #         x = GetFutureChip(date)
+    #         x.get_option()
+    #         output = x.option
+    #         count += 1
+    #     self._last_future = x.get_future('TX')
+    #     self._last_option = output
