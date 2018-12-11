@@ -44,26 +44,18 @@ class FutureChangeProcessor():
                 }
         return future
 
-    @property
-    def call_difference(self):
-        putcall = 'call'
-        Call = getattr(self.data_today, putcall + '_market')
-        Call_last = getattr(self.data_last_date, putcall + '_market')
-        Call['OI_last'] = Call_last.OI
-        Call['difference'] = Call.OI - Call_last.OI
-        return Call
-
-    @property
-    def put_differece(self):
-        Put = self.data_today.put_market
-        Put_last = self.data_last_date.put_market
-        Put['OI_last'] = Put_last.OI
-        Put['difference'] = Put.OI - Put_last.OI
-        return Put
+    def putcall_difference(self, putcall):
+        info = getattr(self.data_today, putcall + '_market')
+        info_last = getattr(self.data_last_date, putcall + '_market')
+        info['OI_last'] = info_last.OI
+        info['difference'] = info.OI - info_last.OI
+        return info
 
     @property
     def combine_call_put(self):
-        array = concatenate([self.call_difference.values, self.put_differece.values], axis=1)
+        call = self.putcall_difference('call')
+        put = self.putcall_difference('put')
+        array = concatenate([call.values, put.values], axis=1)
         header = pd.MultiIndex.from_product(
             [['Call', 'Put'], ['Strike Price', 'OI', 'OI_last', 'differnce']], 
             names=['call/put', 'item'])
