@@ -71,9 +71,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
         ]
 
     def contract(self):
-        index = [0, 1]
-        self.contract_month = self.option['Contract Month(Week)'].unique()[
-            index[self.is_settlement_date] + 1]
+        self.contract_month = [i for i in self.option['Contract Month(Week)'].unique() if len(i)==6][0]
 
     @property
     def call_market(self):
