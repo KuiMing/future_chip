@@ -45,6 +45,10 @@ class FutureChangeProcessor():
         return future
 
     def putcall_difference(self, putcall):
+        self.data_today.contract()
+        self.data_today.atm()
+        setattr(self.data_last_date, "contract_month", self.data_today.contract_month)
+        setattr(self.data_last_date, "at_the_money", self.data_today.at_the_money)
         info = getattr(self.data_today, putcall + '_market')
         info_last = getattr(self.data_last_date, putcall + '_market')
         info['OI_last'] = info_last.OI

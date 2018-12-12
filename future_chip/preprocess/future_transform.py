@@ -7,7 +7,6 @@ from ..dataset import GetFutureChip
 class FutureTrasformPreprocessor(GetFutureChip):
     def __init__(self, date):
         super(FutureTrasformPreprocessor, self).__init__(date)
-        # self.last_future_option()
 
     @property
     def is_settlement_date(self):
@@ -65,36 +64,33 @@ class FutureTrasformPreprocessor(GetFutureChip):
     def taifex_close(self):
         return float(self._twse_summary.close.iloc[1].replace(',', ''))
 
-    @property
-    def at_the_money(self):
-        return [
+    def atm(self):
+        self.at_the_money = [
             floor(self.taifex_close / 100) * 100,
             ceil(self.taifex_close / 100) * 100
         ]
 
-    @property
-    def deadline(self):
+    def contract(self):
         index = [0, 1]
-        deadline = self.option['Contract Month(Week)'].unique()[
+        self.contract_month = self.option['Contract Month(Week)'].unique()[
             index[self.is_settlement_date] + 1]
-        return deadline
-    
+
     @property
     def call_market(self):
         option = self.option
         call = option[['Strike Price', 'OI']][(option['Call/Put'] == 'Call') & \
-        (option['Contract Month(Week)'] == self.deadline) & \
+        (option['Contract Month(Week)'] == self.contract_month) & \
         (option['Trading Session'] == 'Regular') & \
         (option['Strike Price'] >= self.at_the_money[0]) & \
         (option['Strike Price'] <= self.at_the_money[0] + 700)].astype(float)
         call = call.reset_index(drop=True)
         return call
-    
+
     @property
     def put_market(self):
         option = self.option
         put = option[['Strike Price', 'OI']][(option['Call/Put'] == 'Put') & \
-        (option['Contract Month(Week)'] == self.deadline) & \
+        (option['Contract Month(Week)'] == self.contract_month) & \
         (option['Trading Session'] == 'Regular') & \
         (option['Strike Price'] <= self.at_the_money[1]) & \
         (option['Strike Price'] >= self.at_the_money[1] - 700)].astype(float).sort_values('Strike Price', ascending=False)
@@ -121,19 +117,18 @@ class FutureTrasformPreprocessor(GetFutureChip):
     def future_list(self):
         future = pd.DataFrame({
             'item': [
-                'total volume', 'nearby volume', 'deferred volume', 
+                'total volume', 'nearby volume', 'deferred volume',
                 'institutional long volume', "institutional short volume",
                 "noninstitutional long volume", "noninstitutional short volume"
-                ],
-            'volume':[
-                self.total_volume,
-                self.nearby_volume,
-                self.deferred_volume,
+            ],
+            'volume': [
+                self.total_volume, self.nearby_volume, self.deferred_volume,
                 self.institutional_long_volume,
                 self.institutional_short_volume,
                 self.total_volume - self.institutional_long_volume,
-                self.total_volume - self.institutional_short_volume]
-                })
+                self.total_volume - self.institutional_short_volume
+            ]
+        })
         return future
 
     def option_chip(self, putcall, contract):
@@ -148,7 +143,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
             deadline = self.option['Contract Month(Week)'].unique()[index[
                 self.is_settlement_date]]
         elif contract == 'month':
-            deadline = self.deadline
+            deadline = self.contract_month
 
         filtered = self.option[(self.option['Call/Put'] == putcall) & \
                                 (self.option['Trading Session']=='Regular') & \
@@ -164,15 +159,3 @@ class FutureTrasformPreprocessor(GetFutureChip):
         y = strike + settlemet.astype(float)
         return round(sum(y[y > 0]), 1)
 
-    # def last_future_option(self):
-    #     output = []
-    #     count = 1
-    #     while len(output) == 0:
-    #         date = (datetime.strptime(self._date, '%Y/%m/%d') -
-    #                 timedelta(days=count)).strftime('%Y/%m/%d')
-    #         x = GetFutureChip(date)
-    #         x.get_option()
-    #         output = x.option
-    #         count += 1
-    #     self._last_future = x.get_future('TX')
-    #     self._last_option = output
