@@ -71,7 +71,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
         ]
 
     def contract(self):
-        self.contract_month = [i for i in self.option['Contract Month(Week)'].unique() if len(i)==6][0]
+        self.contract_month = [i for i in self.option['Contract Month(Week)'].unique() if len(i)==6][self.is_month_settlement]
 
     @property
     def call_market(self):
@@ -81,7 +81,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
         (option['Trading Session'] == 'Regular') & \
         (option['Strike Price'] >= self.at_the_money[0]) & \
         (option['Strike Price'] <= self.at_the_money[0] + 700)].astype(float)
-        call = call.reset_index(drop=True)
+        call = call[call['Strike Price']%100 == 0].reset_index(drop=True)
         return call
 
     @property
@@ -92,7 +92,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
         (option['Trading Session'] == 'Regular') & \
         (option['Strike Price'] <= self.at_the_money[1]) & \
         (option['Strike Price'] >= self.at_the_money[1] - 700)].astype(float).sort_values('Strike Price', ascending=False)
-        put = put.reset_index(drop=True)
+        put = put[put['Strike Price']%100 == 0].reset_index(drop=True)
         return put
 
     @property
@@ -110,7 +110,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
     @property
     def week_call_chip(self):
         return self.option_chip('Call', "week")
-
+    
     @property
     def future_list(self):
         future = pd.DataFrame({

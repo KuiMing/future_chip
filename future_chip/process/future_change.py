@@ -58,9 +58,7 @@ class FutureChangeProcessor():
     @property
     def combine_call_put(self):
         call = self.putcall_difference('call')
-        call = call[call['Strike Price']%100 == 0]
         put = self.putcall_difference('put')
-        put = put[put['Strike Price']%100 == 0]
         array = concatenate([call.values, put.values], axis=1)
         header = pd.MultiIndex.from_product(
             [['Call', 'Put'], ['Strike Price', 'OI', 'OI_last', 'differnce']], 
