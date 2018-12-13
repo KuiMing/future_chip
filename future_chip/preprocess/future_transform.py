@@ -5,8 +5,9 @@ from ..dataset import GetFutureChip
 
 
 class FutureTrasformPreprocessor(GetFutureChip):
-    def __init__(self, date):
+    def __init__(self, date, last=False):
         super(FutureTrasformPreprocessor, self).__init__(date)
+        self._last = last
 
     @property
     def is_settlement_date(self):
@@ -25,6 +26,14 @@ class FutureTrasformPreprocessor(GetFutureChip):
         return self.deferred_volume / self.total_volume >= 0.4
 
     @property
+    def is_after_month_settlement(self):
+        return self._last and self.is_month_settlement
+
+    @property
+    def is_for_compensation(self):
+        return not self._last and self.is_month_settlement
+
+    @property
     def settlement_price(self):
         price = dict()
         if self.is_week_settlement:
@@ -38,19 +47,21 @@ class FutureTrasformPreprocessor(GetFutureChip):
         return price
 
     @property
+    def open_interest(self):
+        return self.tx.open_interest[self.tx.open_interest != '-'].astype(
+            float).values[self.is_after_month_settlement:]
+
+    @property
     def total_volume(self):
-        volume = self.tx['open_interest'][self.tx['Trading Session'] ==
-                                          'Regular']
-        volume[volume == '-'] = 0
-        return sum(volume.astype(float))
+        return sum(self.open_interest)
 
     @property
     def deferred_volume(self):
-        return float(self.tx.open_interest[2])
+        return self.open_interest[1]
 
     @property
     def nearby_volume(self):
-        return float(self.tx.open_interest[0])
+        return self.open_interest[0]
 
     @property
     def institutional_long_volume(self):
@@ -71,7 +82,10 @@ class FutureTrasformPreprocessor(GetFutureChip):
         ]
 
     def contract(self):
-        self.contract_month = [i for i in self.option['Contract Month(Week)'].unique() if len(i)==6][self.is_month_settlement]
+        self.contract_month = [
+            i for i in self.option['Contract Month(Week)'].unique()
+            if len(i) == 6
+        ][self.is_month_settlement]
 
     @property
     def call_market(self):
@@ -81,7 +95,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
         (option['Trading Session'] == 'Regular') & \
         (option['Strike Price'] >= self.at_the_money[0]) & \
         (option['Strike Price'] <= self.at_the_money[0] + 700)].astype(float)
-        call = call[call['Strike Price']%100 == 0].reset_index(drop=True)
+        call = call[call['Strike Price'] % 100 == 0].reset_index(drop=True)
         return call
 
     @property
@@ -92,7 +106,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
         (option['Trading Session'] == 'Regular') & \
         (option['Strike Price'] <= self.at_the_money[1]) & \
         (option['Strike Price'] >= self.at_the_money[1] - 700)].astype(float).sort_values('Strike Price', ascending=False)
-        put = put[put['Strike Price']%100 == 0].reset_index(drop=True)
+        put = put[put['Strike Price'] % 100 == 0].reset_index(drop=True)
         return put
 
     @property
@@ -110,9 +124,16 @@ class FutureTrasformPreprocessor(GetFutureChip):
     @property
     def week_call_chip(self):
         return self.option_chip('Call', "week")
-    
+
+    @property
+    def next_month_olume(self):
+        return float(self.tx.open_interest[4])
+
     @property
     def future_list(self):
+        compensation = [0, self.nearby_volume]
+        institutional_long_volume = self.institutional_long_volume + compensation[self.is_for_compensation]
+        institutional_short_volume = self.institutional_short_volume + compensation[self.is_for_compensation]
         future = pd.DataFrame({
             'item': [
                 'total volume', 'nearby volume', 'deferred volume',
@@ -121,10 +142,10 @@ class FutureTrasformPreprocessor(GetFutureChip):
             ],
             'volume': [
                 self.total_volume, self.nearby_volume, self.deferred_volume,
-                self.institutional_long_volume,
-                self.institutional_short_volume,
-                self.total_volume - self.institutional_long_volume,
-                self.total_volume - self.institutional_short_volume
+                self.institutional_long_volume + compensation[self.is_for_compensation],
+                self.institutional_short_volume + compensation[self.is_for_compensation],
+                self.total_volume - institutional_long_volume,
+                self.total_volume - institutional_short_volume
             ]
         })
         return future
@@ -156,4 +177,3 @@ class FutureTrasformPreprocessor(GetFutureChip):
         strike[strike > 0] = 0
         y = strike + settlemet.astype(float)
         return round(sum(y[y > 0]), 1)
-

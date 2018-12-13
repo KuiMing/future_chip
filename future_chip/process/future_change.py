@@ -68,7 +68,7 @@ class FutureChangeProcessor():
     def get_change(self):
         self.data_today = FutureTrasformPreprocessor(self._today)
         self.data_today()
-        self.data_last_date = FutureTrasformPreprocessor(self._last_date)
+        self.data_last_date = FutureTrasformPreprocessor(self._last_date, True)
         self.data_last_date()
         future = self.data_today.future_list
         future['difference'] = future['volume'] - self.data_last_date.future_list['volume']
