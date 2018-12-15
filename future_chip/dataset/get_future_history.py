@@ -23,6 +23,7 @@ class GetFutureHistory():
         df = df[df['到期月份(週別)'] == df['到期月份(週別)'].unique()[0]]
         df = df[df['成交日期'] == int(self._date.replace('/', ''))]
         df = df[df.商品代號 == 'TX']
+        df = df[df.成交時間 >=84500]
         one_min_k = df.groupby(['成交時間'], as_index=False).max()
         one_min_k['open'] = df.groupby(['成交時間'], as_index=False).first()['成交價格']
         one_min_k['close'] = df.groupby(['成交時間'], as_index=False).last()['成交價格']
