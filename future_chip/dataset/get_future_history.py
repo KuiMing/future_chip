@@ -12,7 +12,7 @@ class GetFutureHistory():
 
 
     def download(self):
-        wget.download(self.url, 'fugure.zip')  
+        wget.download(self.url, 'future.zip')  
         with zipfile.ZipFile('future.zip', 'r') as zip_ref:
             zip_ref.extractall('.')
     
@@ -22,7 +22,7 @@ class GetFutureHistory():
         df['到期月份(週別)'] = [i.rstrip().lstrip() for i in df['到期月份(週別)']]
         df = df[df['到期月份(週別)'] == df['到期月份(週別)'].unique()[0]]
         df = df[df['成交日期'] == int(self._date.replace('/', ''))]
-
+        df = df[df.商品代號 == 'TX']
         one_min_k = df.groupby(['成交時間'], as_index=False).max()
         one_min_k['open'] = df.groupby(['成交時間'], as_index=False).first()['成交價格']
         one_min_k['close'] = df.groupby(['成交時間'], as_index=False).last()['成交價格']
