@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import wget
 import pandas as pd
 import zipfile
@@ -25,13 +25,12 @@ class GetFutureHistory():
         df = df[df['成交日期'] == int(self._date.replace('/', ''))]
         df = df[df.商品代號 == 'TX']
         df = df[df.成交時間 >=84500]
-        temp = df.groupby(['成交時間'], as_index=False).max()
-        temp['open'] = df.groupby(['成交時間'], as_index=False).first()['成交價格']
-        temp['close'] = df.groupby(['成交時間'], as_index=False).last()['成交價格']
-        temp['low'] = df.groupby(['成交時間'], as_index=False).min()['成交價格']
-        temp = temp.rename(columns={'成交價格':'high'})[['成交日期', '成交時間', 'open', 'close', 'high','low']]
         date = []
-        for i in temp.成交時間:
-            date.append(datetime.strptime(str(temp.成交日期.iloc[0]) + " " + str(i), "%Y%m%d %H%M%S"))
-        output = pd.DataFrame({'open':temp.open.values, 'close':temp.close.values, 'high':temp.high.values, 'low':temp.low.values}, index=date)
+        for i in df.成交時間:
+            date.append(datetime.strptime(str(df.成交日期.iloc[0]) + " " + str(i), "%Y%m%d %H%M%S"))
+        output = pd.DataFrame({'price': df.成交價格.values, 'volume':df['成交數量(B+S)'].values/2}, index=date)
         return output
+
+    # def ohlc(self, frequency):
+        
+        
