@@ -12,4 +12,16 @@ class FutureAnalysisProcess(FutureOhlcPreprocessor):
 
     def EMA(self, window=12):
         column = '{}EMA'.format(str(window))
-        self.data[column] = self.data.close.ewm(span=window, adjust=False).mean()
+        self.data[column] = self.data.close.ewm(
+            span=window, adjust=False).mean()
+
+    def DIF(self):
+        self.EMA(12)
+        self.EMA(26)
+        self.data['DIF'] = self.data['12EMA'] - self.data['26EMA']
+        change = self.data.DIF
+        change[change < 0] = 0
+        change[change > 0] = 1
+        change = (change.values[1:] - change.values[:-1]).tolist()
+        change.insert(0, 0)
+        self.data['change'] = change
