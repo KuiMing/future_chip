@@ -6,6 +6,10 @@ class FutureAnalysisProcess(FutureOhlcPreprocessor):
         super(FutureAnalysisProcess, self).__init__(date)
         self.data = self.ohlc(frequency)
 
-    def moving_average(self, window=20):
-        column = '{}MA'.format(str(window))
+    def SMA(self, window=20):
+        column = '{}SMA'.format(str(window))
         self.data[column] = self.data.close.rolling(window=window).mean()
+
+    def EMA(self, window=12):
+        column = '{}EMA'.format(str(window))
+        self.data[column] = self.data.close.ewm(span=window, adjust=False).mean()
