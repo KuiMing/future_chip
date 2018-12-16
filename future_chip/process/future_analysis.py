@@ -19,9 +19,17 @@ class FutureAnalysisProcess(FutureOhlcPreprocessor):
         self.EMA(12)
         self.EMA(26)
         self.data['DIF'] = self.data['12EMA'] - self.data['26EMA']
-        change = self.data.DIF
+        change = self.data.DIF.copy()
         change[change < 0] = 0
         change[change > 0] = 1
         change = (change.values[1:] - change.values[:-1]).tolist()
         change.insert(0, 0)
         self.data['change'] = change
+
+    def MACD(self):
+        self.data['MACD'] = self.data.DIF.ewm(span=9, adjust=False).mean()
+
+    def __call__(self):
+        self.SMA()
+        self.DIF()
+        self.MACD()
