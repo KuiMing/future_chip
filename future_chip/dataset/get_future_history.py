@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import wget
 import pandas as pd
 import zipfile
+import os
 
 class GetFutureHistory():
     def __init__(self, date):
@@ -29,4 +30,7 @@ class GetFutureHistory():
             date.append(datetime.strptime(str(df.成交日期.iloc[0]) + " " + str(i), "%Y%m%d %H%M%S"))
         self.tick = pd.DataFrame({'price': df.成交價格.values, 'volume':df['成交數量(B+S)'].values/2}, index=date)
         
-        
+    def remove(self):
+        os.remove('future.zip')
+        os.remove(self.file)
+

@@ -8,6 +8,7 @@ class FutureOhlcPreprocessor(GetFutureHistory):
         # self._frequency = frequency
         self.download()
         self.read_csv()
+        self.remove()
 
     def ohlc(self, frequency='5Min'):
         ohlc = self.tick.price.resample(frequency, label='right').ohlc()
