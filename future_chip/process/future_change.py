@@ -61,7 +61,7 @@ class FutureChangeProcessor():
         put = self.putcall_difference('put')
         array = concatenate([call.values, put.values], axis=1)
         header = pd.MultiIndex.from_product(
-            [['Call', 'Put'], ['Strike Price', 'OI', 'OI_last', 'differnce']], 
+            [['Call', 'Put'], ['Strike Price', 'OI', 'OI_last', 'difference']], 
             names=['call/put', 'item'])
         return pd.DataFrame(array, columns=header)
         
