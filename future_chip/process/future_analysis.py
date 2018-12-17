@@ -27,9 +27,10 @@ class FutureAnalysisProcess(FutureOhlcPreprocessor):
         self.data['change'] = change
 
     def MACD(self):
+        self.DIF()
         self.data['MACD'] = self.data.DIF.ewm(span=9, adjust=False).mean()
+        self.data['OSC'] = self.data.DIF - self.data.MACD
 
     def __call__(self):
         self.SMA()
-        self.DIF()
         self.MACD()
