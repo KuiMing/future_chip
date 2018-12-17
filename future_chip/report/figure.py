@@ -9,6 +9,7 @@ class Figure(FutureAnalysisProcess):
         self._in_color = 'red'
         self._de_color = 'green'
 
+
     @property
     def colors(self):
         colors = []
@@ -46,8 +47,27 @@ class Figure(FutureAnalysisProcess):
         if 'yaxis2' not in self.basic_fig['layout'].keys():
             self.basic_fig['layout']['yaxis2'] = dict( domain = [0.2, 0.35], showticklabels = False)
             self.basic_fig['layout']['yaxis4'] = dict( domain = [0.35, 0.9])
+            self.added_sapce = 'y2'
         else:
             self.basic_fig['layout']['yaxis3'] = dict( domain = [0.35, 0.5], showticklabels = False)
             self.basic_fig['layout']['yaxis4'] = dict( domain = [0.5, 0.9])
+            self.added_sapce = 'y3'
+
+    def add_macd(self):
+        self.MACD()
+        self.add_subplot()
+        self.basic_fig['data'].append( dict( x=df.index, y=df.DIF, type='scatter', mode='lines', 
+                         line = dict( width = 1 ),
+                         marker = dict( color = '#E377C2' ),
+                         yaxis = self.added_sapce, name='DIF' ) )
+        self.basic_fig['data'].append( dict( x=df.index, y=df.MACD, type='scatter', mode='lines', 
+                                line = dict( width = 1 ),
+                                marker = dict( color = '#FFD700' ),
+                                yaxis = self.added_sapce, name='MACD' ) )
+        self.basic_fig['data'].append( dict( x=df.index, y=df.OSC, marker=dict( color=colors ),
+                                type='bar', yaxis=self.added_sapce, name='OSC' ) )
+    
+    
+        
     
 
