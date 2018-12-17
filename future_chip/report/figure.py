@@ -8,7 +8,7 @@ class Figure(FutureAnalysisProcess):
         super(Figure, self).__init__(date, frequency)
         self._in_color = 'red'
         self._de_color = 'green'
-
+        self.base()
 
     @property
     def colors(self):
@@ -29,53 +29,92 @@ class Figure(FutureAnalysisProcess):
         close=self.data.close, x=self.data.index, yaxis='y4', name='TX', \
         increasing=dict(line=dict(color=self._in_color)), decreasing=dict(line=dict(color=self._de_color)),)]
         return data
-    
-    @property
-    def basic_fig(self):
-        fig = dict( data=self.candlestick, layout=dict() )
+
+    def base(self):
+        fig = dict(data=self.candlestick, layout=dict())
         fig['layout']['plot_bgcolor'] = 'rgb(250, 250, 250)'
-        fig['layout']['xaxis'] = dict( rangeselector = dict( visible = False ),  rangeslider = dict( visible = False ))
-        fig['layout']['yaxis'] = dict( domain = [0, 0.2], showticklabels = False)
+        fig['layout']['xaxis'] = dict(
+            rangeselector=dict(visible=False), rangeslider=dict(visible=False))
+        fig['layout']['yaxis'] = dict(domain=[0, 0.2], showticklabels=False)
         # fig['layout']['yaxis2'] = dict( domain = [0.2, 0.4], showticklabels = False)
         # fig['layout']['yaxis3'] = dict( domain = [0.4, 0.5], showticklabels = False)
-        fig['layout']['yaxis4'] = dict( domain = [0.2, 0.9])
-        fig['layout']['legend'] = dict( orientation = 'h', y=0.9, x=0.3, yanchor='bottom' )
-        fig['layout']['margin'] = dict( t=40, b=40, r=40, l=40 )
-        return fig
+        fig['layout']['yaxis4'] = dict(domain=[0.2, 0.9])
+        fig['layout']['legend'] = dict(
+            orientation='h', y=0.9, x=0.3, yanchor='bottom')
+        fig['layout']['margin'] = dict(t=40, b=40, r=40, l=40)
+        fig['data'].append(
+            dict(
+                x=self.data.index,
+                y=self.data.volume,
+                marker=dict(color=self.colors),
+                type='bar',
+                yaxis='y',
+                name='Volume'))
+        self.basic_fig = fig
 
     def add_subplot(self):
         if 'yaxis2' not in self.basic_fig['layout'].keys():
-            self.basic_fig['layout']['yaxis2'] = dict( domain = [0.2, 0.35], showticklabels = False)
-            self.basic_fig['layout']['yaxis4'] = dict( domain = [0.35, 0.9])
+            self.basic_fig['layout']['yaxis2'] = dict(
+                domain=[0.2, 0.35], showticklabels=False)
+            self.basic_fig['layout']['yaxis4'] = dict(domain=[0.35, 0.9])
             self.added_sapce = 'y2'
         else:
-            self.basic_fig['layout']['yaxis3'] = dict( domain = [0.35, 0.5], showticklabels = False)
-            self.basic_fig['layout']['yaxis4'] = dict( domain = [0.5, 0.9])
+            self.basic_fig['layout']['yaxis3'] = dict(
+                domain=[0.35, 0.5], showticklabels=False)
+            self.basic_fig['layout']['yaxis4'] = dict(domain=[0.5, 0.9])
             self.added_sapce = 'y3'
 
     def add_macd(self):
         self.MACD()
         self.add_subplot()
         df = self.data
-        self.basic_fig['data'].append( dict( x=df.index, y=df.DIF, type='scatter', mode='lines', 
-                         line = dict( width = 1 ),
-                         marker = dict( color = '#E377C2' ),
-                         yaxis = self.added_sapce, name='DIF' ) )
-        self.basic_fig['data'].append( dict( x=df.index, y=df.MACD, type='scatter', mode='lines', 
-                                line = dict( width = 1 ),
-                                marker = dict( color = '#FFD700' ),
-                                yaxis = self.added_sapce, name='MACD' ) )
-        self.basic_fig['data'].append( dict( x=df.index, y=df.OSC, marker=dict( color=self.colors ),
-                                type='bar', yaxis=self.added_sapce, name='OSC' ) )
-    
+        self.basic_fig['data'].append(
+            dict(
+                x=df.index,
+                y=df.DIF,
+                type='scatter',
+                mode='lines',
+                line=dict(width=1),
+                marker=dict(color='#E377C2'),
+                yaxis=self.added_sapce,
+                name='DIF'))
+        self.basic_fig['data'].append(
+            dict(
+                x=df.index,
+                y=df.MACD,
+                type='scatter',
+                mode='lines',
+                line=dict(width=1),
+                marker=dict(color='#FFD700'),
+                yaxis=self.added_sapce,
+                name='MACD'))
+        self.basic_fig['data'].append(
+            dict(
+                x=df.index,
+                y=df.OSC,
+                marker=dict(color=self.colors),
+                type='bar',
+                yaxis=self.added_sapce,
+                name='OSC'))
+
     def add_dif_change(self):
         self.DIF()
         self.add_subplot()
         df = self.data
-        self.basic_fig['data'].append( dict( x=df.index, y=df.change, type='scatter', mode='lines', 
-                         line = dict( width = 1 ),
-                         marker = dict( color = '#FF0000' ),
-                         yaxis = self.added_sapce, name='change' ) )
-        
-    
+        self.basic_fig['data'].append(
+            dict(
+                x=df.index,
+                y=df.change,
+                type='scatter',
+                mode='lines',
+                line=dict(width=1),
+                marker=dict(color='#FF0000'),
+                yaxis=self.added_sapce,
+                name='change'))
 
+    def writer(self):
+        date = self._date.replace('/', '')
+        plot(
+            self.basic_fig,
+            filename='plotly_candlestick_{}.html'.format(date),
+            validate=False)
