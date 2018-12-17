@@ -56,6 +56,7 @@ class Figure(FutureAnalysisProcess):
     def add_macd(self):
         self.MACD()
         self.add_subplot()
+        df = self.data
         self.basic_fig['data'].append( dict( x=df.index, y=df.DIF, type='scatter', mode='lines', 
                          line = dict( width = 1 ),
                          marker = dict( color = '#E377C2' ),
@@ -64,10 +65,17 @@ class Figure(FutureAnalysisProcess):
                                 line = dict( width = 1 ),
                                 marker = dict( color = '#FFD700' ),
                                 yaxis = self.added_sapce, name='MACD' ) )
-        self.basic_fig['data'].append( dict( x=df.index, y=df.OSC, marker=dict( color=colors ),
+        self.basic_fig['data'].append( dict( x=df.index, y=df.OSC, marker=dict( color=self.colors ),
                                 type='bar', yaxis=self.added_sapce, name='OSC' ) )
     
-    
+    def add_dif_change(self):
+        self.DIF()
+        self.add_subplot()
+        df = self.data
+        self.basic_fig['data'].append( dict( x=df.index, y=df.change, type='scatter', mode='lines', 
+                         line = dict( width = 1 ),
+                         marker = dict( color = '#FF0000' ),
+                         yaxis = self.added_sapce, name='change' ) )
         
     
 
