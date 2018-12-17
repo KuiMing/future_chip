@@ -1,3 +1,4 @@
+import os
 from plotly.offline import plot
 import plotly.graph_objs as go
 from ..process import FutureAnalysisProcess
@@ -112,9 +113,10 @@ class Figure(FutureAnalysisProcess):
                 yaxis=self.added_sapce,
                 name='change'))
 
-    def writer(self):
+    def writer(self, path='.', prefix='plotly_candlestick'):
         date = self._date.replace('/', '')
+        filename = os.path.join(path, '{}_{}.html'.format(prefix, date))
         plot(
             self.basic_fig,
-            filename='plotly_candlestick_{}.html'.format(date),
+            filename=filename,
             validate=False)
