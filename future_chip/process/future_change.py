@@ -48,6 +48,7 @@ class FutureChangeProcessor():
         return pd.DataFrame(array, columns=header)
 
     def adjust_before_settlement(self, future):
+        pd.options.mode.chained_assignment = None
         transfer = self.data_today.nearby_volume + self.data_today.deferred_volume - self.data_last_date.nearby_volume - self.data_last_date.deferred_volume
         long_adjust = floor((self.data_today.institutional_long_volume / self.data_today.total_volume) * transfer)
         short_adjust = floor((self.data_today.institutional_short_volume / self.data_today.total_volume) * transfer)
