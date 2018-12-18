@@ -67,7 +67,7 @@ class FutureChangeProcessor():
         self.data_today.get_future_list()
         self.data_last_date.get_future_list()
         future = self.data_today.future_list.copy()
-        if self.data_today.is_before_settlement:
+        if self.data_today.is_before_settlement and not self.data_today.is_month_settlement:
             future = self.adjust_before_settlement(future)
         future['difference'] = future['volume'] - self.data_last_date.future_list['volume']
         self.report = {
