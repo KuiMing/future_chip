@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from math import floor
 from numpy import concatenate
 import pandas as pd
 from ..preprocess import FutureTrasformPreprocessor
@@ -24,25 +25,6 @@ class FutureChangeProcessor():
             output = x.option
             count += 1
         self._last_date = date
-    
-    @property
-    def future_list(self, obj):
-        future = {
-            'item': [
-                'total volume', 'nearby volume', 'deferred volume', 
-                'institutional long volume', "institutional short volume",
-                "noninstitutional long volume", "noninstitutional short volume"
-                ],
-            'volume':[
-                obj.total_volume,
-                obj.nearby_volume,
-                obj.deferred_volume,
-                obj.institutional_long_volume,
-                obj.institutional_short_volume,
-                obj.total_volume - obj.institutional_long_volume,
-                obj.total_volume - obj.institutional_short_volume]
-                }
-        return future
 
     def putcall_difference(self, putcall):
         self.data_today.contract()
@@ -64,13 +46,28 @@ class FutureChangeProcessor():
             [['Call', 'Put'], ['Strike Price', 'OI', 'OI_last', 'difference']], 
             names=['call/put', 'item'])
         return pd.DataFrame(array, columns=header)
-        
+
+    def adjust_before_settlement(self, future):
+        transfer = self.data_today.nearby_volume + self.data_today.deferred_volume - self.data_last_date.nearby_volume - self.data_last_date.deferred_volume
+        long_adjust = floor((self.data_today.institutional_long_volume / self.data_today.total_volume) * transfer)
+        short_adjust = floor((self.data_today.institutional_short_volume / self.data_today.total_volume) * transfer)
+        future.volume[future.item == 'total volume'] -= transfer
+        future.volume[future.item == 'institutional long volume'] -= long_adjust
+        future.volume[future.item == 'institutional short volume'] -= short_adjust
+        future.volume[future.item == 'noninstitutional long volume'] = future.volume.iloc[0] - future.volume.iloc[3]
+        future.volume[future.item == 'noninstitutional short volume'] = future.volume.iloc[0] - future.volume.iloc[4]
+        return future
+ 
     def get_change(self):
         self.data_today = FutureTrasformPreprocessor(self._today)
         self.data_today()
         self.data_last_date = FutureTrasformPreprocessor(self._last_date, True)
         self.data_last_date()
-        future = self.data_today.future_list
+        self.data_today.get_future_list()
+        self.data_last_date.get_future_list()
+        future = self.data_today.future_list.copy()
+        if self.data_today.is_before_settlement:
+            future = self.adjust_before_settlement(future)
         future['difference'] = future['volume'] - self.data_last_date.future_list['volume']
         self.report = {
             'future': future,

@@ -129,12 +129,11 @@ class FutureTrasformPreprocessor(GetFutureChip):
     def next_month_olume(self):
         return float(self.tx.open_interest[4])
 
-    @property
-    def future_list(self):
+    def get_future_list(self):
         compensation = [0, self.nearby_volume]
         institutional_long_volume = self.institutional_long_volume + compensation[self.is_for_compensation]
         institutional_short_volume = self.institutional_short_volume + compensation[self.is_for_compensation]
-        future = pd.DataFrame({
+        self.future_list = pd.DataFrame({
             'item': [
                 'total volume', 'nearby volume', 'deferred volume',
                 'institutional long volume', "institutional short volume",
@@ -148,7 +147,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
                 self.total_volume - institutional_short_volume
             ]
         })
-        return future
+        
 
     def option_chip(self, putcall, contract):
         """
