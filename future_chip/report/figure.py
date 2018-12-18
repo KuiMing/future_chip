@@ -37,8 +37,6 @@ class Figure(FutureAnalysisProcess):
         fig['layout']['xaxis'] = dict(
             rangeselector=dict(visible=False), rangeslider=dict(visible=False))
         fig['layout']['yaxis'] = dict(domain=[0, 0.2], showticklabels=False)
-        # fig['layout']['yaxis2'] = dict( domain = [0.2, 0.4], showticklabels = False)
-        # fig['layout']['yaxis3'] = dict( domain = [0.4, 0.5], showticklabels = False)
         fig['layout']['yaxis4'] = dict(domain=[0.2, 0.9])
         fig['layout']['legend'] = dict(
             orientation='h', y=0.9, x=0.3, yanchor='bottom')
