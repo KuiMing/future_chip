@@ -15,3 +15,10 @@ class FutureOhlcPreprocessor(GetFutureHistory):
         volume = self.tick.volume.resample(frequency, label='right').sum()
         ohlc['volume'] = volume
         return ohlc
+
+    @property
+    def is_long_short(self):
+        Long = self.tick.price.last_valid_index() - self.tick.price.idxmax()
+        Short = self.tick.price.last_valid_index() - self.tick.price.idxmin()
+        return Long < Short
+
