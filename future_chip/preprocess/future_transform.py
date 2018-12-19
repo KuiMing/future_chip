@@ -62,6 +62,13 @@ class FutureTrasformPreprocessor(GetFutureChip):
     @property
     def nearby_volume(self):
         return self.open_interest[0]
+    
+    @property
+    def individual_ratio(self):
+        if abs(int(self.tx.Change.iloc[0])) >50:
+            return 0.5
+        else:
+            return 1/3
 
     @property
     def institutional_long_volume(self):
