@@ -20,6 +20,7 @@ class GetFutureHistory():
     def read_csv(self):
         df = pd.read_csv(self.file, encoding='big5')
         df.商品代號 = [i.rstrip().lstrip() for i in df.商品代號]
+        df['到期月份(週別)'] = df['到期月份(週別)'].astype(str)
         df['到期月份(週別)'] = [i.rstrip().lstrip() for i in df['到期月份(週別)']]
         df = df[df['到期月份(週別)'] == self._date.replace('/', '')[:6]]
         df = df[df['成交日期'] == int(self._date.replace('/', ''))]
