@@ -58,7 +58,17 @@ class FutureChangeProcessor():
         future.volume[future.item == 'noninstitutional long volume'] = future.volume.iloc[0] - future.volume.iloc[3]
         future.volume[future.item == 'noninstitutional short volume'] = future.volume.iloc[0] - future.volume.iloc[4]
         return future
- 
+
+    def add_individual_and_major(self, future):
+        ratio = self.data_today.individual_long_short * self.data_today.individual_ratio
+        in_long = abs(future.difference.iloc[3]) * ratio
+        in_short = abs(future.difference.iloc[4]) * -ratio
+        future = future.append({'item': 'individual long', 'volume': None, 'difference': in_long}, ignore_index=True)
+        future = future.append({'item': 'individual short', 'volume': None, 'difference': in_short}, ignore_index=True)
+        future = future.append({'item': 'major long', 'volume': None, 'difference': future.difference.iloc[5] - in_long}, ignore_index=True)
+        future = future.append({'item': 'major short', 'volume': None, 'difference': future.difference.iloc[6] - in_short}, ignore_index=True)
+        return future
+
     def get_change(self):
         self.data_today = FutureTrasformPreprocessor(self._today)
         self.data_today()
@@ -70,6 +80,7 @@ class FutureChangeProcessor():
         if self.data_today.is_before_settlement and not self.data_today.is_month_settlement:
             future = self.adjust_before_settlement(future)
         future['difference'] = future['volume'] - self.data_last_date.future_list['volume']
+        future = self.add_individual_and_major(future)
         self.report = {
             'future': future,
             'option':{
