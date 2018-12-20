@@ -69,6 +69,13 @@ class FutureTrasformPreprocessor(GetFutureChip):
             return 0.5
         else:
             return 1/3
+    
+    @property
+    def individual_long_short(self):
+        if abs(int(self.tx.Change.iloc[0])) >50:
+            return -1
+        else:
+            return 1
 
     @property
     def institutional_long_volume(self):
