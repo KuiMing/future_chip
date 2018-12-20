@@ -25,13 +25,13 @@ class FutureChipReport(FutureChangeProcessor):
 
         df = self.report['option']['option_chip']
         option_chip = go.Table(
-            domain=dict(x=[0, 1], y=[0.35, 0.55]),
+            domain=dict(x=[0, 1], y=[0.45, 0.575]),
             header=dict(values=list(df.columns), fill=dict(color='#C2D4FF')),
             cells=dict(values=df.values.T, fill=dict(color='#F5F8FF')))
 
         df = self.report['future']
         future = go.Table(
-            domain=dict(x=[0, 1], y=[0.75, 0.95]),
+            domain=dict(x=[0, 1], y=[0.75, 1]),
             header=dict(values=list(df.columns), fill=dict(color='#C2D4FF')),
             cells=dict(values=df.values.T, fill=dict(color='#F5F8FF')))
         future_chip_data = [Call, Put, putcall, option_chip, future]
