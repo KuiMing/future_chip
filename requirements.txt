@@ -1,0 +1,10 @@
+django
+gunicorn
+django-heroku
+Flask
+plotly
+requests
+bs4
+pandas
+numpy
+line-bot-sdk
