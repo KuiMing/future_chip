@@ -53,6 +53,7 @@ class GetFutureChip():
             columns=['index', 'close', 'dir', 'change', 'change_percent'])
         twse_summary.change[twse_summary.change == '--'] = 0
         twse_summary.change_percent[twse_summary.change_percent == '--'] = 0
+        twse_summary.change_percent[twse_summary.change_percent == '---'] = 0
         twse_summary.change = twse_summary.change.astype(float) * np.sign(
             twse_summary.change_percent.astype(float))
         self._twse_summary = twse_summary.drop(columns='dir')
