@@ -9,13 +9,13 @@ class GetFutureHistory():
         self._date = date
         date = self._date.replace('/', '_')
         self.url = "http://www.taifex.com.tw/file/taifex/Dailydownload/DailydownloadCSV/Daily_{}.zip".format(date)
-        self.file = "Daily_{}.csv".format(date)
+        self.file = "templates/Daily_{}.csv".format(date)
 
 
     def download(self):
-        wget.download(self.url, 'future.zip')  
-        with zipfile.ZipFile('future.zip', 'r') as zip_ref:
-            zip_ref.extractall('.')
+        wget.download(self.url, 'templates/future.zip')  
+        with zipfile.ZipFile('templates/future.zip', 'r') as zip_ref:
+            zip_ref.extractall('templates/.')
     
     def read_csv(self):
         df = pd.read_csv(self.file, encoding='big5')
@@ -32,6 +32,6 @@ class GetFutureHistory():
         self.tick = pd.DataFrame({'price': df.成交價格.values, 'volume':df['成交數量(B+S)'].values/2}, index=date)
         
     def remove(self):
-        os.remove('future.zip')
+        os.remove('templates/future.zip')
         os.remove(self.file)
 
