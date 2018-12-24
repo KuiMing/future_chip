@@ -22,9 +22,9 @@ class GetFutureHistory():
         df.商品代號 = [i.rstrip().lstrip() for i in df.商品代號]
         df['到期月份(週別)'] = df['到期月份(週別)'].astype(str)
         df['到期月份(週別)'] = [i.rstrip().lstrip() for i in df['到期月份(週別)']]
-        df = df[df['到期月份(週別)'] == self._date.replace('/', '')[:6]]
-        df = df[df['成交日期'] == int(self._date.replace('/', ''))]
         df = df[df.商品代號 == 'TX']
+        df = df[df['到期月份(週別)'] == df['到期月份(週別)'].values[0]]
+        df = df[df['成交日期'] == int(self._date.replace('/', ''))]
         df = df[df.成交時間 >=84500]
         date = []
         for i in df.成交時間:
