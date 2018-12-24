@@ -57,7 +57,7 @@ class FutureChipReport(FutureChangeProcessor):
         .render()
         with open('templates/{}'.format(filename), mode) as f:
             f.write('<center/>')
-            f.write('<font size=40>{}</font>'.format(title))
+            f.write('<font size=40>{} {}</font>'.format(self._today, title))
             f.write(output)
             f.close()
 
