@@ -78,7 +78,11 @@ def handle_message(event):
         try:
             x = FutureChipReport(event.message.text)
             x.add_html()
-            text = 'line://app/1625409055-qZAO6DX0'
+            x = Figure(event.message.text, "5Min")
+            x.add_macd()
+            x.add_dif_change()
+            x.writer('templates', filename='plotly')
+            text = 'table- line://app/1625409055-qZAO6DX0, figure- line://app/1625409055-N5KnD0yY'
         except:
             text = event.message.text
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=text))
