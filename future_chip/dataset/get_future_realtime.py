@@ -4,6 +4,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 import os
 import sys
+import pytz
 
 
 class Quote(object):
@@ -31,7 +32,9 @@ class Quote(object):
 
 class GetFutureRealtime():
     def __init__(self):
-        AH = time.localtime().tm_hour >= 15 or time.localtime().tm_hour < 8
+        tz = pytz.timezone(pytz.country_timezones('tw')[0])
+        now = datetime.now(tz)
+        AH = now.hour >= 15 or now.hour < 8
         url_list = [
             'http://info512.taifex.com.tw/EN/FusaQuote_Norl.aspx',
             'http://info512ah.taifex.com.tw/EN/FusaQuote_Norl.aspx'
