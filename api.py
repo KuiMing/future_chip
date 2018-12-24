@@ -14,8 +14,7 @@ import pytz
 from bs4 import BeautifulSoup
 import os
 import sys
-from future_chip import Quote, GetFutureRealtime
-from future_chip import FutureChipReport
+from future_chip import Quote, GetFutureRealtime, FutureChipReport, Figure
 
 app = Flask(__name__)
 
