@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 import os
 import sys
 from future_chip import Quote, GetFutureRealtime
+from future_chip import FutureChipReport
 
 app = Flask(__name__)
 
@@ -38,6 +39,11 @@ def test_page():
 @app.route('/plotly.html')
 def plotly():
     return render_template('plotly.html')
+
+
+@app.route('/option_chip')
+def option_chip():
+    return render_template('option_chip.html')
 
 
 @app.route('/future_realtime')
@@ -69,7 +75,12 @@ def handle_message(event):
     if event.message.text == 'now':
         text = realtime()
     else:
-        text = event.message.text
+        try:
+            x = FutureChipReport(event.message.text)
+            x.add_html()
+            text = 'line://app/1625409055-qZAO6DX0'
+        except:
+            text = event.message.text
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=text))
 
 
