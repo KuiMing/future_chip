@@ -111,9 +111,9 @@ class Figure(FutureAnalysisProcess):
                 yaxis=self.added_sapce,
                 name='change'))
 
-    def writer(self, path='.', prefix='plotly_candlestick'):
-        date = self._date.replace('/', '')
-        filename = os.path.join(path, '{}_{}.html'.format(prefix, date))
+    def writer(self, path='.', filename='plotly_candlestick'):
+        # date = self._date.replace('/', '')
+        filename = os.path.join(path, '{}.html'.format(filename))
         plot(
             self.basic_fig,
             filename=filename,
