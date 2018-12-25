@@ -1,6 +1,5 @@
-from flask import Flask, render_template
-from flask import Flask, render_template, request, abort
-
+import os
+from flask import Flask, request, abort
 from linebot import (LineBotApi, WebhookHandler)
 from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import (
@@ -8,13 +7,7 @@ from linebot.models import (
     TextMessage,
     TextSendMessage,
 )
-import requests
-from datetime import datetime
-import pytz
-from bs4 import BeautifulSoup
-import os
-import sys
-from future_chip import Quote, GetFutureRealtime, FutureChipReport, Figure
+from future_chip import FutureChipReport, Figure, GetFutureRealtime
 
 app = Flask(__name__)
 
