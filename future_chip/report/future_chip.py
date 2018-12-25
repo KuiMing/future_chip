@@ -55,21 +55,9 @@ class FutureChipReport(FutureChangeProcessor):
         output = output.set_properties(**{'font-size': fontsize, 'font-family': 'Calibri'}) \
         .set_table_attributes('border="5" class="dataframe table table-hover table-bordered"') \
         .render()
-        with open('templates/{}'.format(filename), mode) as f:
-            f.write('<center/>')
-            f.write('<font size=40>{} {}</font>'.format(self._today, title))
-            f.write(output)
-            f.close()
+        output = '<font size=40>{} {}</font>{}'.format(self._today, title, output)
+        return output
 
     def add_html(self):
-        output = self.html(self.report['future'], index=False, title='Future Volume Change') + \
-        self.html(
-            self.report['option']['option_strength'],
-            mode='a',
-            title='Option Strength') + \
-        self.html(
-            self.report['option']['option_chip'],
-            index=False,
-            mode='a',
-            title='Option Chip')
+        output = self.html(self.report['future'], index=False, title='Future Volume Change') + self.html(self.report['option']['option_strength'], mode='a', title='Option Strength') + self.html(self.report['option']['option_chip'], index=False, mode='a', title='Option Chip')
         return output
