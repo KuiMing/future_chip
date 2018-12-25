@@ -62,13 +62,14 @@ class FutureChipReport(FutureChangeProcessor):
             f.close()
 
     def add_html(self):
-        self.html(self.report['future'], index=False, title='Future Volume Change')
+        output = self.html(self.report['future'], index=False, title='Future Volume Change') + \
         self.html(
             self.report['option']['option_strength'],
             mode='a',
-            title='Option Strength')
+            title='Option Strength') + \
         self.html(
             self.report['option']['option_chip'],
             index=False,
             mode='a',
             title='Option Chip')
+        return output
