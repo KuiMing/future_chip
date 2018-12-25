@@ -41,30 +41,33 @@ class GetFutureRealtime():
         ]
         self.url = url_list[AH]
 
+    def realtime_output(self, last=None):
+        html_data = requests.get(self.url)
+        soup = BeautifulSoup(markup=html_data.text, features='html.parser')
+        rows = soup.find_all('tr', {
+            "class": "custDataGridRow",
+            "bgcolor": "#DADBF7"
+        })
+        items = rows[0].find_all('td')
+        name = items[0].a.text.strip()
+        quote = Quote()
+        quote.name = name
+        quote.trade_price = float(items[6].font.text.replace(',', ''))
+        if last == None:
+            quote.change = 0
+        else:
+            quote.change = quote.trade_price - last
+        last = quote.trade_price
+
+        quote.trade_time = datetime.strptime(items[14].font.text, "%H:%M:%S")
+        quote.open = float(items[10].font.text.replace(',', ''))
+        quote.high = float(items[11].font.text.replace(',', ''))
+        quote.low = float(items[12].font.text.replace(',', ''))
+        return quote.__str__(), last
+
     def __call__(self):
         last = None
         while True:
-            html_data = requests.get(self.url)
-            soup = BeautifulSoup(markup=html_data.text, features='html.parser')
-            rows = soup.find_all('tr', {
-                "class": "custDataGridRow",
-                "bgcolor": "#DADBF7"
-            })
-            items = rows[0].find_all('td')
-            name = items[0].a.text.strip()
-            quote = Quote()
-            quote.name = name
-            quote.trade_price = float(items[6].font.text.replace(',', ''))
-            if last == None:
-                quote.change = 0
-            else:
-                quote.change = quote.trade_price - last
-            last = quote.trade_price
-
-            quote.trade_time = datetime.strptime(items[14].font.text,
-                                                 "%H:%M:%S")
-            quote.open = float(items[10].font.text.replace(',', ''))
-            quote.high = float(items[11].font.text.replace(',', ''))
-            quote.low = float(items[12].font.text.replace(',', ''))
-            print(quote)
+            output, last = self.realtime_output(last)
+            print(output)
             time.sleep(5)
