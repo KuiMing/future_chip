@@ -51,7 +51,7 @@ def future_option():
 @app.route('/future_realtime')
 def realtime():
     x = GetFutureRealtime()
-    return x()
+    return x.realtime_output()[0]
 
 
 @app.route("/callback", methods=['POST'])
