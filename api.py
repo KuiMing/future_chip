@@ -68,6 +68,15 @@ def callback():
 
     return 'OK'
 
+def figure_html(date):
+    x = Figure(date, "5Min")
+    x.add_macd()
+    x.add_dif_change()
+    x.writer('templates', filename='plotly')
+    with open('templates/plotly.html', 'r') as f:
+        figure = f.read()
+        f.close()
+    return figure
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -77,10 +86,8 @@ def handle_message(event):
         try:
             x = FutureChipReport(event.message.text)
             x.add_html()
-            x = Figure(event.message.text, "5Min")
-            x.add_macd()
-            x.add_dif_change()
-            x.writer('templates', filename='plotly')
+            global figure
+            figure = figure_html(event.message.text)
             text = 'table- line://app/1625409055-qZAO6DX0, figure- line://app/1625409055-N5KnD0yY'
         except:
             text = event.message.text
