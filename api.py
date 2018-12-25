@@ -37,12 +37,22 @@ def test_page():
 
 @app.route('/plotly.html')
 def plotly():
-    return render_template('plotly.html')
+    date = request.args.get('date', '', type=str)
+    if date == '':
+        return figure
+    else:
+        figured = figure_html(date)
+        return figured
 
 
-@app.route('/option_chip')
-def option_chip():
-    return render_template('option_chip.html')
+@app.route('/future_option')
+def future_option():
+    date = request.args.get('date', '', type=str)
+    if date == '':
+        return table
+    else:
+        tabled = table_html(date)
+        return tabled
 
 
 @app.route('/future_realtime')
