@@ -68,6 +68,13 @@ def callback():
 
     return 'OK'
 
+
+def table_html(date):
+    x = FutureChipReport(date)
+    table = x.add_html()
+    return table
+
+
 def figure_html(date):
     x = Figure(date, "5Min")
     x.add_macd()
@@ -78,14 +85,15 @@ def figure_html(date):
         f.close()
     return figure
 
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     if event.message.text == 'now':
         text = realtime()
     else:
         try:
-            x = FutureChipReport(event.message.text)
-            x.add_html()
+            global table
+            table = table_html(event.message.text)
             global figure
             figure = figure_html(event.message.text)
             text = 'table- line://app/1625409055-qZAO6DX0, figure- line://app/1625409055-N5KnD0yY'
