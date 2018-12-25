@@ -72,7 +72,7 @@ class FutureTrasformPreprocessor(GetFutureChip):
     
     @property
     def individual_long_short(self):
-        if abs(int(self.tx.Change.iloc[0])) >50:
+        if int(self.tx.Change.iloc[0]) >50:
             return -1
         else:
             return 1
