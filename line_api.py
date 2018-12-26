@@ -106,6 +106,7 @@ def handle_message(event):
     with open('config/table_figure.json', 'r') as j:
         bubble = json.load(j)
         j.close()
+    line_bot_api.push_message(event.reply_token, TextSendMessage(text="Test"))
     if event.message.text == 'now':
         bubble = realtime()
         message = FlexSendMessage(alt_text="Report", contents=bubble)
@@ -118,10 +119,9 @@ def handle_message(event):
             figure = figure_html(event.message.text)
             message = FlexSendMessage(alt_text="Report", contents=bubble)
             line_bot_api.reply_message(event.reply_token, message)
-            # text = 'table- line://app/1625409055-qZAO6DX0, figure- line://app/1625409055-N5KnD0yY'
         except:
             text = event.message.text
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=text))
+        
 
 
 if __name__ == "__main__":
