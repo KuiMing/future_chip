@@ -53,11 +53,16 @@ def realtime():
     with open('config/now.json', 'r') as f:
         template = json.load(f)
         f.close()
-    template['body']['contents'][2]['contents'][0]['contents'][1]['text'] = output.trade_time
-    template['body']['contents'][2]['contents'][1]['contents'][1]['text'] = output.trade_time.strftime("%H:%M:%S")
-    template['body']['contents'][2]['contents'][2]['contents'][1]['text'] = output.open
-    template['body']['contents'][2]['contents'][3]['contents'][1]['text'] = output.high
-    template['body']['contents'][2]['contents'][4]['contents'][1]['text'] = output.low
+    template['body']['contents'][2]['contents'][0]['contents'][1][
+        'text'] = output.trade_time.strftime("%H:%M:%S")
+    template['body']['contents'][2]['contents'][1]['contents'][1][
+        'text'] = output.trade_price
+    template['body']['contents'][2]['contents'][2]['contents'][1][
+        'text'] = output.open
+    template['body']['contents'][2]['contents'][3]['contents'][1][
+        'text'] = output.high
+    template['body']['contents'][2]['contents'][4]['contents'][1][
+        'text'] = output.low
     return template
 
 
