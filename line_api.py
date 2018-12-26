@@ -261,26 +261,125 @@ def handle_message(event):
                     "contents": [
                         {
                         "type": "bubble",
+                        "hero": {
+                            "type": "image",
+                            "size": "full",
+                            "aspectRatio": "1:1",
+                            "aspectMode": "cover",
+                            "url": "https://i.imgur.com/OnSsdEB.png"
+                        },
                         "body": {
                             "type": "box",
                             "layout": "vertical",
+                            "spacing": "sm",
                             "contents": [
                             {
                                 "type": "text",
-                                "text": "First bubble"
+                                "text": "Table",
+                                "wrap": true,
+                                "weight": "bold",
+                                "size": "xl"
+                            },
+                            {
+                                "type": "box",
+                                "layout": "baseline",
+                                "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "Future & Option Chip",
+                                    "wrap": true,
+                                    "weight": "bold",
+                                    "size": "xl",
+                                    "flex": 0
+                                }
+                                ]
+                            }
+                            ]
+                        },
+                        "footer": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                            {
+                                "type": "button",
+                                "style": "primary",
+                                "action": {
+                                "type": "uri",
+                                "label": "LIFF URL",
+                                "uri": "line://app/1625409055-qZAO6DX0"
+                                }
+                            },
+                            {
+                                "type": "button",
+                                "action": {
+                                "type": "uri",
+                                "label": "URL",
+                                "uri": "https://calm-caverns-60140.herokuapp.com/future_option"
+                                }
                             }
                             ]
                         }
                         },
                         {
                         "type": "bubble",
+                        "hero": {
+                            "type": "image",
+                            "size": "full",
+                            "aspectRatio": "1:1",
+                            "aspectMode": "cover",
+                            "url": "https://i.imgur.com/fJORzLu.png"
+                        },
                         "body": {
                             "type": "box",
                             "layout": "vertical",
+                            "spacing": "sm",
                             "contents": [
                             {
                                 "type": "text",
-                                "text": "Second bubble"
+                                "text": "Figure",
+                                "wrap": true,
+                                "weight": "bold",
+                                "size": "xl"
+                            },
+                            {
+                                "type": "box",
+                                "layout": "baseline",
+                                "flex": 1,
+                                "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "Candlestick & MACD",
+                                    "wrap": true,
+                                    "weight": "bold",
+                                    "size": "xl",
+                                    "flex": 0
+                                }
+                                ]
+                            }
+                            ]
+                        },
+                        "footer": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                            {
+                                "type": "button",
+                                "style": "primary",
+                                "action": {
+                                "type": "uri",
+                                "label": "LIFF URL",
+                                "uri": "line://app/1625409055-N5KnD0yY"
+                                }
+                            },
+                            {
+                                "type": "button",
+                                "action": {
+                                "type": "uri",
+                                "label": "URL",
+                                "uri": "https://calm-caverns-60140.herokuapp.com/plotly.html"
+                                }
                             }
                             ]
                         }
