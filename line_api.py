@@ -276,7 +276,7 @@ def handle_message(event):
                             {
                                 "type": "text",
                                 "text": "Table",
-                                "wrap": true,
+                                "wrap": True,
                                 "weight": "bold",
                                 "size": "xl"
                             },
@@ -287,7 +287,7 @@ def handle_message(event):
                                 {
                                     "type": "text",
                                     "text": "Future & Option Chip",
-                                    "wrap": true,
+                                    "wrap": True,
                                     "weight": "bold",
                                     "size": "xl",
                                     "flex": 0
@@ -338,7 +338,7 @@ def handle_message(event):
                             {
                                 "type": "text",
                                 "text": "Figure",
-                                "wrap": true,
+                                "wrap": True,
                                 "weight": "bold",
                                 "size": "xl"
                             },
@@ -350,7 +350,7 @@ def handle_message(event):
                                 {
                                     "type": "text",
                                     "text": "Candlestick & MACD",
-                                    "wrap": true,
+                                    "wrap": True,
                                     "weight": "bold",
                                     "size": "xl",
                                     "flex": 0
