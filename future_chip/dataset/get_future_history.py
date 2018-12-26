@@ -3,7 +3,7 @@ import wget
 import pandas as pd
 import zipfile
 import os
-
+from ..logger import logger
 class GetFutureHistory():
     def __init__(self, date):
         self._date = date
@@ -13,10 +13,14 @@ class GetFutureHistory():
 
 
     def download(self):
-        wget.download(self.url, 'templates/future.zip')  
-        with zipfile.ZipFile('templates/future.zip', 'r') as zip_ref:
-            zip_ref.extractall('templates/.')
-    
+        wget.download(self.url, 'templates/future.zip')
+        try:
+            with zipfile.ZipFile('templates/future.zip', 'r') as zip_ref:
+                zip_ref.extractall('templates/.')
+        except:
+            os.remove('templates/future.zip')
+            logger.info("There is no data for {}".format(self._date))
+        
     def read_csv(self):
         df = pd.read_csv(self.file, encoding='big5')
         df.商品代號 = [i.rstrip().lstrip() for i in df.商品代號]
