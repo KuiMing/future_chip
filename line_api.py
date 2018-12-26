@@ -255,6 +255,43 @@ def handle_message(event):
             event.reply_token,
             message
         )
+    elif event.message.text == '2':
+        bubble = {
+                    "type": "carousel",
+                    "contents": [
+                        {
+                        "type": "bubble",
+                        "body": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                            {
+                                "type": "text",
+                                "text": "First bubble"
+                            }
+                            ]
+                        }
+                        },
+                        {
+                        "type": "bubble",
+                        "body": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                            {
+                                "type": "text",
+                                "text": "Second bubble"
+                            }
+                            ]
+                        }
+                        }
+                    ]
+                    }
+        message = FlexSendMessage(alt_text="one", contents=bubble)
+        line_bot_api.reply_message(
+            event.reply_token,
+            message
+        )
     else:
         try:
             global table
