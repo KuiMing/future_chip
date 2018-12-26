@@ -63,11 +63,11 @@ class GetFutureRealtime():
         quote.open = float(items[10].font.text.replace(',', ''))
         quote.high = float(items[11].font.text.replace(',', ''))
         quote.low = float(items[12].font.text.replace(',', ''))
-        return quote.__str__(), last
+        return quote, last
 
     def __call__(self):
         last = None
         while True:
             output, last = self.realtime_output(last)
-            print(output)
+            print(output.__str__())
             time.sleep(5)

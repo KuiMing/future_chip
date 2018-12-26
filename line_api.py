@@ -49,7 +49,16 @@ def future_option():
 @app.route('/future_realtime')
 def realtime():
     x = GetFutureRealtime()
-    return x.realtime_output()[0]
+    output, last = x.realtime_output()
+    with open('config/now.json', 'r') as f:
+        template = json.load(f)
+        f.close()
+    template['body']['contents'][2]['contents'][0]['contents'][1]['text'] = output.trade_time
+    template['body']['contents'][2]['contents'][1]['contents'][1]['text'] = output.trade_price
+    template['body']['contents'][2]['contents'][2]['contents'][1]['text'] = output.open
+    template['body']['contents'][2]['contents'][3]['contents'][1]['text'] = output.high
+    template['body']['contents'][2]['contents'][4]['contents'][1]['text'] = output.low
+    return template
 
 
 @app.route("/callback", methods=['POST'])
@@ -93,7 +102,9 @@ def handle_message(event):
         bubble = json.load(j)
         j.close()
     if event.message.text == 'now':
-        text = realtime()
+        bubble = realtime()
+        message = FlexSendMessage(alt_text="Report", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
     else:
         try:
             global table
