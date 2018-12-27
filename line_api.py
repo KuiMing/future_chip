@@ -46,10 +46,8 @@ def future_option():
         return tabled
 
 
-@app.route('/future_realtime')
-def realtime():
-    x = GetFutureRealtime()
-    output, last = x.realtime_output()
+
+def realtime(output):
     with open('config/now.json', 'r') as f:
         template = json.load(f)
         f.close()
@@ -65,6 +63,12 @@ def realtime():
         'text'] = str(output.low)
     return template
 
+@app.route('/future_realtime')
+def TX():
+    x = GetFutureRealtime()
+    output, last = x.realtime_output()
+    template = realtime(output)
+    return template
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -107,7 +111,7 @@ def handle_message(event):
         bubble = json.load(j)
         j.close()
     if event.message.text == 'now':
-        bubble = realtime()
+        bubble = TX()
         message = FlexSendMessage(alt_text="Report", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
     else:

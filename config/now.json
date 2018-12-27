@@ -109,7 +109,7 @@
                         "contents": [
                             {
                                 "type": "text",
-                                "text": "Close",
+                                "text": "Low",
                                 "size": "sm",
                                 "color": "#555555"
                             },
