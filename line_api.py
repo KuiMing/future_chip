@@ -50,6 +50,7 @@ def realtime(output):
     with open('config/now.json', 'r') as f:
         template = json.load(f)
         f.close()
+    template['body']['contents'][0]['text'] = output.name
     template['body']['contents'][2]['contents'][0]['contents'][1][
         'text'] = output.trade_time.strftime("%H:%M:%S")
     template['body']['contents'][2]['contents'][1]['contents'][1][
