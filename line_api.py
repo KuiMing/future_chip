@@ -5,7 +5,7 @@ from linebot import (LineBotApi, WebhookHandler)
 from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             FlexSendMessage)
-from future_chip import FutureChipReport, Figure, GetFutureRealtime
+from future_chip import FutureChipReport, Figure, GetFutureRealtime, GetMinidowRealtime
 
 app = Flask(__name__)
 
@@ -46,7 +46,6 @@ def future_option():
         return tabled
 
 
-
 def realtime(output):
     with open('config/now.json', 'r') as f:
         template = json.load(f)
@@ -63,12 +62,22 @@ def realtime(output):
         'text'] = str(output.low)
     return template
 
+
 @app.route('/future_realtime')
-def TX():
+def tx():
     x = GetFutureRealtime()
-    output, last = x.realtime_output()
-    template = realtime(output)
+    output = x.realtime_output()
+    template = realtime(output[0])
     return template
+
+
+@app.route('/minidow_realtime')
+def minidow():
+    x = GetMinidowRealtime()
+    output = x.realtime_output()
+    template = realtime(output[0])
+    return template
+
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -110,8 +119,12 @@ def handle_message(event):
     with open('config/table_figure.json', 'r') as j:
         bubble = json.load(j)
         j.close()
-    if event.message.text == 'now':
-        bubble = TX()
+    if event.message.text == 'TX':
+        bubble = tx()
+        message = FlexSendMessage(alt_text="Report", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+    elif event.message.text == 'Mini Dow':
+        bubble = minidow()
         message = FlexSendMessage(alt_text="Report", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
     else:
@@ -124,7 +137,8 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, message)
         except:
             text = event.message.text
-            line_bot_api.push_message(event.reply_token, TextSendMessage(text=text))
+            line_bot_api.push_message(
+                event.reply_token, TextSendMessage(text=text))
 
 
 if __name__ == "__main__":
