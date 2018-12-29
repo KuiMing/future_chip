@@ -1,4 +1,5 @@
 from ..preprocess import FutureOhlcPreprocessor
+from numpy import sign
 
 
 class FutureAnalysisProcess(FutureOhlcPreprocessor):
@@ -14,17 +15,28 @@ class FutureAnalysisProcess(FutureOhlcPreprocessor):
         column = '{}EMA'.format(str(window))
         self.data[column] = self.data.close.ewm(
             span=window, adjust=False).mean()
-
-    def DIF(self):
-        self.EMA(12)
-        self.EMA(26)
-        self.data['DIF'] = self.data['12EMA'] - self.data['26EMA']
+    
+    def DIF_sign(self):
         change = self.data.DIF.copy()
         change[change < 0] = 0
         change[change > 0] = 1
         change = (change.values[1:] - change.values[:-1]).tolist()
         change.insert(0, 0)
+        self.data['sign'] = change
+
+    def DIF_change(self):
+        change = self.data.DIF.copy()
+        change = (change.values[1:] - change.values[:-1]).tolist()
+        change.insert(0, 0)
+        change = sign(change)
         self.data['change'] = change
+    
+    def DIF(self):
+        self.EMA(12)
+        self.EMA(26)
+        self.data['DIF'] = self.data['12EMA'] - self.data['26EMA']
+        self.DIF_sign()
+        self.DIF_change()
 
     def MACD(self):
         self.DIF()
