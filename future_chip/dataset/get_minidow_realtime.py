@@ -14,7 +14,6 @@ class GetMinidowRealtime():
     def realtime_output(self, last=None):
         quote = Quote()
         html = requests.get(self.url)
-        quote.trade_time = datetime.now()
         soup = BeautifulSoup(
             html.content, 'html.parser', from_encoding='utf-8')
         quote.name = "miniDow"
@@ -27,13 +26,19 @@ class GetMinidowRealtime():
         match = reg.search(str(links[0]))
         quote.trade_price = float(match.group(0)[1:-1].replace(',', ''))
 
+        trade_time = soup.find_all("span", {"data-reactid": "18"})
+        reg = re.compile('[0-9]*:[0-9]{2}[A-Z]{2}')
+        trade_time = datetime.strptime(
+            reg.search(str(trade_time[0])).group(0), "%I:%M%p")
+        quote.trade_time = trade_time
+
         links = soup.find_all("span", {
             "class": 'Trsdu(0.3s)',
             "data-reactid": "24"
         })
         reg = re.compile('>.*<')
         match = reg.search(str(links[0]))
-        quote.open = float(match.group(0)[1:-1].replace(',', ''))
+        quote.open = match.group(0)[1:-1].replace(',', '')
 
         links = soup.find_all("td", {
             "class": 'Ta(end) Fw(b) Lh(14px)',
@@ -41,11 +46,11 @@ class GetMinidowRealtime():
         })
         reg = re.compile('>.*-')
         match = reg.search(str(links[0]))
-        quote.low = float(match.group(0)[1:-1].replace(',', ''))
+        quote.low = match.group(0)[1:-1].replace(',', '')
 
         reg = re.compile('- .*<')
         match = reg.search(str(links[0]))
-        quote.high = float(match.group(0)[1:-1].replace(',', ''))
+        quote.high = match.group(0)[1:-1].replace(',', '')
         if last == None:
             quote.change = 0
         else:
