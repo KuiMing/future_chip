@@ -50,6 +50,17 @@ class Figure(FutureAnalysisProcess):
                 yaxis='y',
                 name='Volume'))
         self.basic_fig = fig
+    
+    def add_sma(self):
+        self.basic_fig['data'].append(
+            dict(
+                x=self.data.index,
+                y=self.data['20SMA'],
+                marker=dict(color='#0085ff'),
+                type='scatter',
+                mode='lines',
+                yaxis='y4',
+                name='20SMA'))
 
     def add_subplot(self):
         if 'yaxis2' not in self.basic_fig['layout'].keys():
@@ -103,11 +114,21 @@ class Figure(FutureAnalysisProcess):
         self.basic_fig['data'].append(
             dict(
                 x=df.index,
-                y=df.change,
+                y=df.sign,
                 type='scatter',
                 mode='lines',
                 line=dict(width=1),
                 marker=dict(color='#FF0000'),
+                yaxis=self.added_sapce,
+                name='sign'))
+        self.basic_fig['data'].append(
+            dict(
+                x=df.index,
+                y=df.change,
+                type='scatter',
+                mode='lines',
+                line=dict(width=1),
+                marker=dict(color='#0085ff'),
                 yaxis=self.added_sapce,
                 name='change'))
 

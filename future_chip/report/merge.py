@@ -8,6 +8,7 @@ class MergeReport(Figure):
         future_chip = FutureChipReport(self._date)
         self.future_chip = future_chip.add_future_chip()
         self.__call__()
+        # self.add_sma()
         self.add_macd()
         self.add_dif_change()
 
