@@ -61,6 +61,8 @@ def realtime(output):
         'text'] = str(output.high)
     template['body']['contents'][2]['contents'][4]['contents'][1][
         'text'] = str(output.low)
+    template['body']['contents'][2]['contents'][5]['contents'][1][
+        'text'] = str(output.change)
     return template
 
 

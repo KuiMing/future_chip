@@ -32,11 +32,7 @@ class GetFutureRealtime(GetRealtime):
         quote = Quote()
         quote.name = name
         quote.trade_price = float(items[6].font.text.replace(',', ''))
-        if last == None:
-            quote.change = 0
-        else:
-            quote.change = quote.trade_price - last
-        last = quote.trade_price
+        quote.change = float(items[7].font.text.replace(',', ''))
 
         quote.trade_time = datetime.strptime(items[14].font.text, "%H:%M:%S")
         quote.open = float(items[10].font.text.replace(',', ''))

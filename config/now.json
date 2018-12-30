@@ -121,6 +121,25 @@
                                 "align": "end"
                             }
                         ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "Change",
+                                "size": "sm",
+                                "color": "#555555"
+                            },
+                            {
+                                "type": "text",
+                                "text": "$0.69",
+                                "size": "sm",
+                                "color": "#111111",
+                                "align": "end"
+                            }
+                        ]
                     }
                 ]
             }
