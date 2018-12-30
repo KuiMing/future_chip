@@ -3,11 +3,12 @@ from datetime import datetime
 import time
 import requests
 from bs4 import BeautifulSoup
-from .get_future_realtime import Quote
+from .get_realtime import Quote, GetRealtime
 
 
-class GetMinidowRealtime():
+class GetMinidowRealtime(GetRealtime):
     def __init__(self):
+        super(GetMinidowRealtime, self).__init__()
 
         self.url = 'https://finance.yahoo.com/quote/YM%3DF?p=YM%3DF'
 
@@ -58,9 +59,3 @@ class GetMinidowRealtime():
         last = quote.trade_price
         return quote, last
 
-    def __call__(self):
-        last = None
-        while True:
-            output, last = self.realtime_output(last)
-            print(output.__str__())
-            time.sleep(5)
