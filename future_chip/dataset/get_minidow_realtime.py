@@ -52,10 +52,13 @@ class GetMinidowRealtime(GetRealtime):
         reg = re.compile('- .*<')
         match = reg.search(str(links[0]))
         quote.high = match.group(0)[1:-1].replace(',', '')
-        if last == None:
-            quote.change = 0
-        else:
-            quote.change = quote.trade_price - last
-        last = quote.trade_price
+        
+
+        links = soup.find_all("span", {
+            "class": 'Trsdu(0.3s)',
+            "data-reactid": "16"})
+        reg = re.compile('>.* ')
+        match = reg.search(str(links[0]))
+        quote.change = match.group(0)[1:-1].replace(',', '')
         return quote, last
 
