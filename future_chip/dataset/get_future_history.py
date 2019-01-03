@@ -29,9 +29,8 @@ class GetFutureHistory():
         df = df[df['到期月份(週別)'] == df['到期月份(週別)'].values[0]]
         df = df[df['成交日期'] == int(self._date.replace('/', ''))]
         df = df[df.成交時間 >=84500]
-        date = []
-        for i in df.成交時間:
-            date.append(datetime.strptime(str(df.成交日期.iloc[0]) + " " + str(i), "%Y%m%d %H%M%S"))
+        dates = (df.成交日期.values[0]*1000000 + df.成交時間.values).astype(str)
+        date = [datetime.strptime(x,'%Y%m%d%H%M%S') for x in dates]
         self.tick = pd.DataFrame({'price': df.成交價格.values, 'volume':df['成交數量(B+S)'].values/2}, index=date)
         
     def remove(self):
