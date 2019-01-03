@@ -22,9 +22,8 @@ class GetFutureHistory():
             logger.info("There is no data for {}".format(self._date))
         
     def read_csv(self):
-        df = pd.read_csv(self.file, encoding='big5')
+        df = pd.read_csv(self.file, encoding='big5', dtype={'到期月份(週別)':str})
         df.商品代號 = [i.rstrip().lstrip() for i in df.商品代號]
-        df['到期月份(週別)'] = df['到期月份(週別)'].astype(str)
         df['到期月份(週別)'] = [i.rstrip().lstrip() for i in df['到期月份(週別)']]
         df = df[df.商品代號 == 'TX']
         df = df[df['到期月份(週別)'] == df['到期月份(週別)'].values[0]]
