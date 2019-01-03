@@ -1,4 +1,5 @@
 import os
+import glob
 import json
 from flask import Flask, request, abort
 from linebot import (LineBotApi, WebhookHandler)
@@ -117,6 +118,15 @@ def figure_html(date):
     return figure
 
 
+def remove_zip_file():
+    try:
+        files = glob.glob('templates/future*.zip')
+        for i in files:
+            os.remove(i)
+    except:
+        pass
+
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     with open('config/table_figure.json', 'r') as j:
@@ -132,6 +142,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, message)
     else:
         try:
+            remove_zip_file()
             global table
             table = table_html(event.message.text)
             global figure
