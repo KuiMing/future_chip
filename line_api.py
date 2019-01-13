@@ -7,12 +7,13 @@ from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             FlexSendMessage)
 from future_chip import FutureChipReport, Figure, GetFutureRealtime, GetMinidowRealtime
+import requests
 
 app = Flask(__name__)
 
 linet = os.getenv('linet')
 lines = os.getenv('lines')
-
+simulator_recorder = os.getenv('simulator_recorder')
 line_bot_api = LineBotApi(linet)
 handler = WebhookHandler(lines)
 
@@ -132,6 +133,9 @@ def handle_message(event):
     with open('config/table_figure.json', 'r') as j:
         bubble = json.load(j)
         j.close()
+    line_input = event.message.text.split(' ')
+    operation = ['buy', 'sell', 'cover']
+
     if event.message.text == 'TX':
         bubble = tx()
         message = FlexSendMessage(alt_text="Report", contents=bubble)
@@ -140,6 +144,11 @@ def handle_message(event):
         bubble = minidow()
         message = FlexSendMessage(alt_text="Report", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
+    elif line_input[0] in operation:
+        r = requests.get("{}?operation={}&point={}".format(simulator_recorder, line_input[0], line_input[1]))
+        text = "https://kuiming.gitbook.io/future-simulate-record/account"
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text=text))
     else:
         try:
             remove_zip_file()
@@ -151,7 +160,7 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, message)
         except:
             text = event.message.text
-            line_bot_api.push_message(
+            line_bot_api.reply_message(
                 event.reply_token, TextSendMessage(text=text))
 
 
