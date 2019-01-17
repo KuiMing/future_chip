@@ -42,9 +42,13 @@ class GetFutureChip():
 
     def get_option_open_interest_value(self):
         url = "http://www.taifex.com.tw/enl/eng3/optContractsDate"
-        payload = "queryType=1&goDay=&doQuery=1&dateaddcnt=&{}&commodityId=TXO".format(
-            self._start_date)
-        response = requests.request("POST", url, data=payload)
+        date = urllib.parse.urlencode({"queryDate": self._date})
+        payload = "queryType=1&goDay=&doQuery=1&dateaddcnt=&{}&commodityId=TXO".format(date)
+        headers = {
+            'cache-control': "no-cache",
+            'content-type': "application/x-www-form-urlencoded"
+        }
+        response = requests.request("POST", url, data=payload, headers=headers)
         soup = BeautifulSoup(response.content, 'html.parser')
         table = soup.find_all("tbody")[0]
         table = pd.read_html(str(table), header=2)[0]
