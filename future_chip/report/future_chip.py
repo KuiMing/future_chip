@@ -37,12 +37,13 @@ class FutureChipReport(FutureChangeProcessor):
         future_chip_data = [Call, Put, putcall, option_chip, future]
         return future_chip_data
 
-    def html(self, df,
-            index=True,
-            fontsize=40,
-            mode='w',
-            title=None,
-            filename='option_chip.html'):
+    def html(self,
+             df,
+             index=True,
+             fontsize=40,
+             mode='w',
+             title=None,
+             filename='option_chip.html'):
         fontsize = str(fontsize) + 'pt'
         if index:
             output = df.style \
@@ -55,9 +56,13 @@ class FutureChipReport(FutureChangeProcessor):
         output = output.set_properties(**{'font-size': fontsize, 'font-family': 'Calibri'}) \
         .set_table_attributes('border="5" class="dataframe table table-hover table-bordered"') \
         .render()
-        output = '<font size=40>{} {}</font>{}'.format(self._today, title, output)
+        output = '<font size=40>{} {}</font>{}'.format(self._today, title,
+                                                       output)
         return output
 
     def add_html(self):
-        output = self.html(self.report['future'], index=False, title='Future Volume Change') + self.html(self.report['option']['option_strength'], mode='a', title='Option Strength') + self.html(self.report['option']['option_chip'], index=False, mode='a', title='Option Chip')
+        output = self.html(self.report['future'], index=False, title='Future Volume Change') + \
+        self.html(self.report['option']['option_strength'], mode='a', title='Option Strength') + \
+        self.html(self.report['option']['option_chip'], index=False, mode='a', title='Option Chip') + \
+        self.html(self.report['option']['open_insterest_value'], index=False, mode='a', title='Option Interest Value')
         return output

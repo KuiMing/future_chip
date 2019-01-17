@@ -4,6 +4,7 @@ import logging
 import pandas as pd
 import requests
 import numpy as np
+from bs4 import BeautifulSoup
 from ..logger import logger
 
 
@@ -39,6 +40,23 @@ class GetFutureChip():
             for i in self.option['Contract Month(Week)']
         ]
 
+    def get_option_open_interest_value(self):
+        url = "http://www.taifex.com.tw/enl/eng3/optContractsDate"
+        payload = "queryType=1&goDay=&doQuery=1&dateaddcnt=&{}&commodityId=TXO".format(
+            self._start_date)
+        response = requests.request("POST", url, data=payload)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        table = soup.find_all("tbody")[0]
+        table = pd.read_html(str(table), header=2)[0]
+        trading_value = pd.DataFrame(
+            [table.values[0][3:][[7, 9, 11]].tolist()] +
+            table.values[1:3, 1:-2][:, [7, 9, 11]].tolist(),
+            columns=['long', 'short', 'net'])
+        trading_value['item'] = ['dealers', 'investment trust', 'FINI']
+        trading_value = trading_value[['item', 'long', 'short', 'net']]
+        trading_value['ratio'] = trading_value.long / trading_value.short
+        self._option_open_interest_value = trading_value
+
     def get_major_institutional_trader(self):
         url = '{}/futContractsDateDown?&{}&{}&commodityId=TXF'.format(
             self._taifex_url, self._start_date, self._end_date)
@@ -69,3 +87,4 @@ class GetFutureChip():
         self.mtx = self.get_future('MTX')
         self.get_option()
         self.get_major_institutional_trader()
+        self.get_option_open_interest_value()
