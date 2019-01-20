@@ -1,7 +1,10 @@
 import os
+from io import BytesIO
 import glob
 import json
-from flask import Flask, request, abort
+from PIL import Image
+import requests
+from flask import Flask, request, abort, send_file
 from linebot import (LineBotApi, WebhookHandler)
 from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
@@ -19,8 +22,16 @@ handler = WebhookHandler(lines)
 
 
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
+def TXO_chart():
+    x = GetFutureRealtime()
+    target = x.realtime_output()[0].name
+    url = 'http://info512ah.taifex.com.tw/Future/chart.aspx?type=1&size=630400&contract='
+    response = requests.get('{}{}'.format(url, target))
+    img = Image.open(BytesIO(response.content))
+    output = BytesIO()
+    img.convert('RGBA').save(output, format='PNG')
+    output.seek(0, 0)
+    return send_file(output, mimetype='image/png', as_attachment=False)
 
 
 @app.route('/test')
