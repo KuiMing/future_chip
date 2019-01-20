@@ -25,8 +25,8 @@ handler = WebhookHandler(lines)
 def TXO_chart():
     x = GetFutureRealtime()
     target = x.realtime_output()[0].name
-    url = 'http://info512ah.taifex.com.tw/Future/chart.aspx?type=1&size=630400&contract='
-    response = requests.get('{}{}'.format(url, target))
+    url = x.url.replace('EN/FusaQuote_Norl.aspx','') + 'Future/chart.aspx?type=1&size=630400&contract='
+    response = requests.get('{}{}{}'.format(x.url, target))
     img = Image.open(BytesIO(response.content))
     output = BytesIO()
     img.convert('RGBA').save(output, format='PNG')
