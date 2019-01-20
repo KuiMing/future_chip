@@ -16,6 +16,7 @@ app = Flask(__name__)
 
 linet = os.getenv('linet')
 lines = os.getenv('lines')
+lineid = os.getenv('lineid')
 simulator_recorder = os.getenv('simulator_recorder')
 line_bot_api = LineBotApi(linet)
 handler = WebhookHandler(lines)
@@ -26,7 +27,7 @@ def TXO_chart():
     x = GetFutureRealtime()
     target = x.realtime_output()[0].name
     url = x.url.replace('EN/FusaQuote_Norl.aspx','') + 'Future/chart.aspx?type=1&size=630400&contract='
-    response = requests.get('{}{}{}'.format(x.url, target))
+    response = requests.get('{}{}'.format(url, target))
     img = Image.open(BytesIO(response.content))
     output = BytesIO()
     img.convert('RGBA').save(output, format='PNG')
@@ -177,3 +178,4 @@ def handle_message(event):
 
 if __name__ == "__main__":
     app.run()
+    line_bot_api.push_message(lineid, TextSendMessage(text="Earn a lot of money"))
