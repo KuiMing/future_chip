@@ -11,6 +11,8 @@ from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             FlexSendMessage)
 from future_chip import FutureChipReport, Figure, GetFutureRealtime, GetMinidowRealtime
 import requests
+from datetime import datetime
+import time
 
 app = Flask(__name__)
 
@@ -26,7 +28,8 @@ handler = WebhookHandler(lines)
 def TXO_chart():
     x = GetFutureRealtime()
     target = x.realtime_output()[0].name
-    url = x.url.replace('EN/FusaQuote_Norl.aspx','') + 'Future/chart.aspx?type=1&size=630400&contract='
+    url = x.url.replace('EN/FusaQuote_Norl.aspx',
+                        '') + 'Future/chart.aspx?type=1&size=630400&contract='
     response = requests.get('{}{}'.format(url, target))
     img = Image.open(BytesIO(response.content))
     output = BytesIO()
@@ -140,6 +143,13 @@ def remove_zip_file():
         pass
 
 
+@app.route('/deal')
+def send_deal_message():
+    text = request.args.get('text', 'dealed', type=str)
+    line_bot_api.push_message(lineid, TextSendMessage(text=text))
+    return True
+
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     with open('config/table_figure.json', 'r') as j:
@@ -157,7 +167,8 @@ def handle_message(event):
         message = FlexSendMessage(alt_text="Report", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
     elif line_input[0] in operation:
-        r = requests.get("{}?operation={}&point={}".format(simulator_recorder, line_input[0], line_input[1]))
+        r = requests.get("{}?operation={}&point={}".format(
+            simulator_recorder, line_input[0], line_input[1]))
         text = "https://kuiming.gitbook.io/future-simulate-record/account"
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text=text))
@@ -178,4 +189,9 @@ def handle_message(event):
 
 if __name__ == "__main__":
     app.run()
-    line_bot_api.push_message(lineid, TextSendMessage(text="Earn a lot of money"))
+
+# now = datetime.now()
+# while now.hour<23:
+#     line_bot_api.push_message(lineid, TextSendMessage(text="Earn a lot of money"))
+#     time.sleep(3600*7)
+#     now = datetime.now()
