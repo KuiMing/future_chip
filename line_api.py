@@ -147,7 +147,7 @@ def remove_zip_file():
 def send_deal_message():
     text = request.args.get('text', 'dealed', type=str)
     line_bot_api.push_message(lineid, TextSendMessage(text=text))
-    return True
+    return 'ok'
 
 
 @handler.add(MessageEvent, message=TextMessage)
