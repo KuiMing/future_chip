@@ -1,0 +1,126 @@
+{
+    "type": "bubble",
+    "styles": {
+        "footer": {
+            "separator": true
+        }
+    },
+    "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+            {
+                "type": "text",
+                "text": "TX",
+                "weight": "bold",
+                "size": "xxl",
+                "margin": "md"
+            },
+            {
+                "type": "separator",
+                "margin": "xxl"
+            },
+            {
+                "type": "box",
+                "layout": "vertical",
+                "margin": "xxl",
+                "spacing": "sm",
+                "contents": [
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "margin": "xxl",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "Time",
+                                "size": "sm",
+                                "color": "#555555"
+                            },
+                            {
+                                "type": "text",
+                                "text": "20:12:21",
+                                "size": "sm",
+                                "color": "#111111",
+                                "align": "end"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "Close",
+                                "size": "sm",
+                                "color": "#555555"
+                            },
+                            {
+                                "type": "text",
+                                "text": "7.31",
+                                "size": "sm",
+                                "color": "#F25702",
+                                "align": "end"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "Order",
+                                "size": "sm",
+                                "color": "#555555"
+                            },
+                            {
+                                "type": "text",
+                                "text": "$8.0",
+                                "size": "sm",
+                                "color": "#111111",
+                                "align": "end"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "Profit",
+                                "size": "sm",
+                                "color": "#555555"
+                            },
+                            {
+                                "type": "text",
+                                "text": "$0.69",
+                                "size": "sm",
+                                "color": "#111111",
+                                "align": "end"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "footer": {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "sm",
+        "contents": [
+            {
+                "type": "button",
+                "style": "primary",
+                "action": {
+                    "type": "uri",
+                    "label": "Account",
+                    "uri": "https://kuiming.gitbook.io/future-simulate-record/account"
+                }
+            }
+        ]
+    }
+}
