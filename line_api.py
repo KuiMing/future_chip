@@ -82,6 +82,27 @@ def realtime(output):
         'text'] = str(output.change)
     return template
 
+def simulate_output(order, point):
+    x = GetFutureRealtime()
+    output, _ = x.realtime_output()
+    with open('config/simulator.json', 'r') as f:
+        template = json.load(f)
+        f.close()
+    template['body']['contents'][0]['text'] = order + output.name
+    template['body']['contents'][2]['contents'][0]['contents'][1][
+        'text'] = output.trade_time.strftime("%H:%M:%S")
+    template['body']['contents'][2]['contents'][1]['contents'][1][
+        'text'] = str(output.trade_price)
+    template['body']['contents'][2]['contents'][2]['contents'][1][
+        'text'] = point
+    profit = output.trade_price - int(point)
+    if order == 'sell':
+        profit = - profit
+    elif order == 'cover':
+        profit = '-'
+    template['body']['contents'][2]['contents'][3]['contents'][1][
+        'text'] = str(profit)
+    return template
 
 @app.route('/future_realtime')
 def tx():
@@ -169,9 +190,9 @@ def handle_message(event):
     elif line_input[0] in operation:
         r = requests.get("{}?operation={}&point={}".format(
             simulator_recorder, line_input[0], line_input[1]))
-        text = "https://kuiming.gitbook.io/future-simulate-record/account"
-        line_bot_api.reply_message(
-            event.reply_token, TextSendMessage(text=text))
+        bubble = simulate_output(line_input[0], line_input[1])
+        message = FlexSendMessage(alt_text="Report", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
     else:
         try:
             remove_zip_file()
@@ -190,8 +211,3 @@ def handle_message(event):
 if __name__ == "__main__":
     app.run()
 
-# now = datetime.now()
-# while now.hour<23:
-#     line_bot_api.push_message(lineid, TextSendMessage(text="Earn a lot of money"))
-#     time.sleep(3600*7)
-#     now = datetime.now()
