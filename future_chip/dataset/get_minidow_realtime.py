@@ -42,12 +42,11 @@ class GetMinidowRealtime(GetRealtime):
         quote.open = match.group(0)[1:-1].replace(',', '')
 
         links = soup.find_all("td", {
-            "class": 'Ta(end) Fw(b) Lh(14px)',
             "data-test": "DAYS_RANGE-value"
         })
         reg = re.compile('>.*-')
         match = reg.search(str(links[0]))
-        quote.low = match.group(0)[1:-1].replace(',', '')
+        quote.low = match.group(0)[1:-1].replace(',', '').replace(' ','')
 
         reg = re.compile('- .*<')
         match = reg.search(str(links[0]))
