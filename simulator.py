@@ -135,7 +135,7 @@ def matching(point, operation):
             price = output.trade_price
             os.system('echo price: {}'.format(price))
             time.sleep(5)
-        done = price < point
+        done = price > point
     if done:
         with open(account, 'a') as fd:
             fd.write('\n')

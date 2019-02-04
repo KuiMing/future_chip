@@ -41,23 +41,20 @@ class GetMinidowRealtime(GetRealtime):
         match = reg.search(str(links[0]))
         quote.open = match.group(0)[1:-1].replace(',', '')
 
-        links = soup.find_all("td", {
-            "data-test": "DAYS_RANGE-value"
-        })
+        links = soup.find_all("td", {"data-test": "DAYS_RANGE-value"})
         reg = re.compile('>.*-')
         match = reg.search(str(links[0]))
-        quote.low = match.group(0)[1:-1].replace(',', '').replace(' ','')
+        quote.low = match.group(0)[1:-1].replace(',', '').replace(' ', '')
 
         reg = re.compile('- .*<')
         match = reg.search(str(links[0]))
         quote.high = match.group(0)[1:-1].replace(',', '')
-        
 
         links = soup.find_all("span", {
             "class": 'Trsdu(0.3s)',
-            "data-reactid": "16"})
+            "data-reactid": "16"
+        })
         reg = re.compile('>.* ')
         match = reg.search(str(links[0]))
         quote.change = match.group(0)[1:-1].replace(',', '')
         return quote, last
-

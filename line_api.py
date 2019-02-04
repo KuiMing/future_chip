@@ -82,6 +82,7 @@ def realtime(output):
         'text'] = str(output.change)
     return template
 
+
 def simulate_output(order, point):
     x = GetFutureRealtime()
     output, _ = x.realtime_output()
@@ -97,12 +98,13 @@ def simulate_output(order, point):
         'text'] = point
     profit = output.trade_price - int(point)
     if order == 'sell':
-        profit = - profit
+        profit = -profit
     elif order == 'cover':
         profit = '-'
     template['body']['contents'][2]['contents'][3]['contents'][1][
         'text'] = str(profit)
     return template
+
 
 @app.route('/future_realtime')
 def tx():
@@ -114,9 +116,18 @@ def tx():
 
 @app.route('/minidow_realtime')
 def minidow():
-    x = GetMinidowRealtime()
-    output = x.realtime_output()
-    template = realtime(output[0])
+    try:
+        x = GetMinidowRealtime()
+        output = x.realtime_output()
+        template = realtime(output[0])
+    except:
+        with open('/Users/benjamin/Github/future_chip/config/now.json',
+                  'r') as f:
+            template = json.load(f)
+            f.close()
+        template['body']['contents'][0]['text'] = 'Mini Dow'
+        template['body']['contents'][2]['contents'][0]['contents'][1][
+            'text'] = datetime.now().strftime("%H:%M:%S")
     return template
 
 
@@ -210,4 +221,3 @@ def handle_message(event):
 
 if __name__ == "__main__":
     app.run()
-
