@@ -1,18 +1,19 @@
+from datetime import datetime
 import os
 from io import BytesIO
 import glob
 import json
+import time
 from PIL import Image
 import requests
+from twstock import Stock
+import twstock
 from flask import Flask, request, abort, send_file
 from linebot import (LineBotApi, WebhookHandler)
 from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             FlexSendMessage)
 from future_chip import FutureChipReport, Figure, GetFutureRealtime, GetMinidowRealtime
-import requests
-from datetime import datetime
-import time
 
 app = Flask(__name__)
 
@@ -105,6 +106,7 @@ def simulate_output(order, point):
         'text'] = str(profit)
     return template
 
+
 @app.route('/quotation')
 def quotation():
     with open('config/quotation.json', 'r') as f:
@@ -113,6 +115,7 @@ def quotation():
     template['contents'].append(tx())
     template['contents'].append(minidow())
     return template
+
 
 @app.route('/future_realtime')
 def tx():
@@ -182,6 +185,51 @@ def remove_zip_file():
         pass
 
 
+def component(text, color):
+    q = {"type": "text", "text": str(text), "size": "sm", "color": color}
+    return q
+
+
+def stock_query(code, temp):
+    stock = Stock(code)
+    x = twstock.realtime.get(code)
+    change = round(
+        float(x['realtime']['latest_trade_price']) - float(stock.price[-2]), 2)
+    if change < 0:
+        color = '#2d8540'
+    elif change > 0:
+        color = '#F25702'
+    else:
+        color = '#111111'
+    temp['body']['contents'][2]['contents'][0]['contents'].append(
+        component(x['info']['code'], color))
+    temp['body']['contents'][2]['contents'][1]['contents'].append(
+        component(x['realtime']['latest_trade_price'], color))
+    temp['body']['contents'][2]['contents'][2]['contents'].append(
+        component(x['realtime']['open'], color))
+    temp['body']['contents'][2]['contents'][3]['contents'].append(
+        component(change, color))
+    temp['body']['contents'][2]['contents'][4]['contents'].append(
+        component(x['realtime']['high'], color))
+    temp['body']['contents'][2]['contents'][5]['contents'].append(
+        component(x['realtime']['low'], color))
+    return temp
+
+
+def stock_qoutation():
+    with open('/Users/benjamin/Github/future_chip/config/stock.json',
+              'r') as f:
+        temp = json.load(f)
+        f.close()
+    with open('/Users/benjamin/Github/future_chip/config/stock_list.json',
+              'r') as f:
+        stock_list = json.load(f)
+        f.close()
+    for i in stock_list['stock']:
+        temp = stock_query(i, temp)
+    return temp
+
+
 @app.route('/deal')
 def send_deal_message():
     text = request.args.get('text', 'dealed', type=str)
@@ -203,6 +251,10 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, message)
     elif event.message.text == 'Mini Dow':
         bubble = minidow()
+        message = FlexSendMessage(alt_text="Report", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+    elif event.message.text.lower() == 'stock':
+        bubble = stock_qoutation()
         message = FlexSendMessage(alt_text="Report", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
     elif line_input[0] in operation:
