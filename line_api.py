@@ -105,7 +105,7 @@ def simulate_output(order, point):
         'text'] = str(profit)
     return template
 
-
+@app.route('/quotation')
 def quotation():
     with open('config/quotation.json', 'r') as f:
         template = json.load(f)
