@@ -11,3 +11,4 @@ line-bot-sdk
 wget
 lxml
 Pillow
+twstock
