@@ -217,12 +217,10 @@ def stock_query(code, temp):
 
 
 def stock_qoutation():
-    with open('/Users/benjamin/Github/future_chip/config/stock.json',
-              'r') as f:
+    with open('config/stock.json', 'r') as f:
         temp = json.load(f)
         f.close()
-    with open('/Users/benjamin/Github/future_chip/config/stock_list.json',
-              'r') as f:
+    with open('config/stock_list.json', 'r') as f:
         stock_list = json.load(f)
         f.close()
     for i in stock_list['stock']:
