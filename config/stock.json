@@ -32,7 +32,7 @@
                         "contents": [
                             {
                                 "type": "text",
-                                "text": "Stock",
+                                "text": "Code",
                                 "size": "sm",
                                 "color": "#555555"
                             }
@@ -44,7 +44,7 @@
                         "contents": [
                             {
                                 "type": "text",
-                                "text": "Close",
+                                "text": "Now",
                                 "size": "sm",
                                 "color": "#555555"
                             }

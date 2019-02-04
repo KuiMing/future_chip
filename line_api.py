@@ -186,7 +186,7 @@ def remove_zip_file():
 
 
 def component(text, color):
-    q = {"type": "text", "text": str(text), "size": "sm", "color": color}
+    q = {"type": "text", "text": str(text), "size": "xs", "color": color}
     return q
 
 
