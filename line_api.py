@@ -251,7 +251,7 @@ def handle_message(event):
         bubble = minidow()
         message = FlexSendMessage(alt_text="Report", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
-    elif event.message.text.lower() == 'stock':
+    elif event.message.text == 'stock':
         bubble = stock_qoutation()
         message = FlexSendMessage(alt_text="Report", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
