@@ -107,7 +107,7 @@ def simulate_output(order, point):
 
 
 def quotation():
-    with open('config/quotation.json', 'r'):
+    with open('config/quotation.json', 'r') as f:
         template = json.load(f)
         f.close()
     template['contents'].append(tx())
