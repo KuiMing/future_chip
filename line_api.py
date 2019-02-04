@@ -106,6 +106,14 @@ def simulate_output(order, point):
     return template
 
 
+def quotation():
+    with open('config/quotation.json', 'r'):
+        template = json.load(f)
+        f.close()
+    template['contents'].append(tx())
+    template['contents'].append(minidow())
+    return template
+
 @app.route('/future_realtime')
 def tx():
     x = GetFutureRealtime()
@@ -121,8 +129,7 @@ def minidow():
         output = x.realtime_output()
         template = realtime(output[0])
     except:
-        with open('/Users/benjamin/Github/future_chip/config/now.json',
-                  'r') as f:
+        with open('config/now.json', 'r') as f:
             template = json.load(f)
             f.close()
         template['body']['contents'][0]['text'] = 'Mini Dow'
@@ -191,7 +198,7 @@ def handle_message(event):
     operation = ['buy', 'sell', 'cover']
 
     if event.message.text == 'TX':
-        bubble = tx()
+        bubble = quotation()
         message = FlexSendMessage(alt_text="Report", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
     elif event.message.text == 'Mini Dow':
