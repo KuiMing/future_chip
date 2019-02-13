@@ -193,8 +193,14 @@ def component(text, color):
 def stock_query(code, temp):
     stock = Stock(code)
     x = twstock.realtime.get(code)
-    change = round(
-        float(x['realtime']['latest_trade_price']) - float(stock.price[-2]), 2)
+    hour = datetime.now().hour + 8
+    if hour < 14 and hour >= 9:
+        change = round(
+            float(x['realtime']['latest_trade_price']) - float(stock.price[-1]), 2)
+    else:
+        change = round(
+            float(x['realtime']['latest_trade_price']) - float(stock.price[-2]), 2)
+
     if change < 0:
         color = '#2d8540'
     elif change > 0:
