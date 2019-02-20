@@ -96,8 +96,7 @@ class FutureChangeProcessor():
                         self.data_today.month_call_chip / self.data_today.month_put_chip,
                         ]
                     }
-                    ),
-                'open_insterest_value': self.data_today._option_open_interest_value}}
+                    )}}
 
 
 

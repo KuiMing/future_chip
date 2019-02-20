@@ -91,4 +91,4 @@ class GetFutureChip():
         self.mtx = self.get_future('MTX')
         self.get_option()
         self.get_major_institutional_trader()
-        self.get_option_open_interest_value()
+        # self.get_option_open_interest_value()
