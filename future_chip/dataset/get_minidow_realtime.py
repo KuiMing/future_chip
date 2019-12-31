@@ -35,7 +35,7 @@ class GetMinidowRealtime(GetRealtime):
 
         links = soup.find_all("span", {
             "class": 'Trsdu(0.3s)',
-            "data-reactid": "24"
+            "data-reactid": "25"
         })
         reg = re.compile('>.*<')
         match = reg.search(str(links[0]))
