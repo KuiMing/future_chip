@@ -16,7 +16,6 @@ class Quote(object):
         self.open = None
         self.high = None
         self.low = None
-        self.last = None
 
     def __str__(self):
         res = list()
@@ -31,13 +30,12 @@ class Quote(object):
 
 
 class GetRealtime():
-    def realtime_output(self, last=None):
+    def realtime_output(self):
         quote = Quote()
-        return quote, last
+        return quote
 
     def __call__(self):
-        last = None
         while True:
-            output, last = self.realtime_output(last)
+            output = self.realtime_output()
             print(output.__str__())
             time.sleep(5)

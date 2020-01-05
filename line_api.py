@@ -28,7 +28,7 @@ handler = WebhookHandler(lines)
 @app.route('/')
 def TXO_chart():
     x = GetFutureRealtime()
-    target = x.realtime_output()[0].name
+    target = x.realtime_output().name
     url = x.url.replace('EN/FusaQuote_Norl.aspx',
                         '') + 'Future/chart.aspx?type=1&size=630400&contract='
     response = requests.get('{}{}'.format(url, target))
@@ -86,7 +86,7 @@ def realtime(output):
 
 def simulate_output(order, point):
     x = GetFutureRealtime()
-    output, _ = x.realtime_output()
+    output = x.realtime_output()
     with open('config/simulator.json', 'r') as f:
         template = json.load(f)
         f.close()
@@ -121,7 +121,7 @@ def quotation():
 def tx():
     x = GetFutureRealtime()
     output = x.realtime_output()
-    template = realtime(output[0])
+    template = realtime(output)
     return template
 
 
@@ -130,7 +130,7 @@ def minidow():
     try:
         x = GetMinidowRealtime()
         output = x.realtime_output()
-        template = realtime(output[0])
+        template = realtime(output)
     except:
         with open('config/now.json', 'r') as f:
             template = json.load(f)

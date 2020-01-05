@@ -20,7 +20,7 @@ class GetFutureRealtime(GetRealtime):
         ]
         self.url = url_list[AH]
 
-    def realtime_output(self, last=None):
+    def realtime_output(self):
         html_data = requests.get(self.url)
         soup = BeautifulSoup(markup=html_data.text, features='html.parser')
         rows = soup.find_all('tr', {
@@ -38,4 +38,4 @@ class GetFutureRealtime(GetRealtime):
         quote.open = float(items[10].font.text.replace(',', ''))
         quote.high = float(items[11].font.text.replace(',', ''))
         quote.low = float(items[12].font.text.replace(',', ''))
-        return quote, last
+        return quote

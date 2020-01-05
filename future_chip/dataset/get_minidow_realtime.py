@@ -12,7 +12,7 @@ class GetMinidowRealtime(GetRealtime):
 
         self.url = 'https://finance.yahoo.com/quote/YM%3DF?p=YM%3DF'
 
-    def realtime_output(self, last=None):
+    def realtime_output(self):
         quote = Quote()
         html = requests.get(self.url)
         soup = BeautifulSoup(
@@ -57,4 +57,4 @@ class GetMinidowRealtime(GetRealtime):
         reg = re.compile('>.* ')
         match = reg.search(str(links[0]))
         quote.change = match.group(0)[1:-1].replace(',', '')
-        return quote, last
+        return quote
