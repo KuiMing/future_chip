@@ -67,18 +67,18 @@ class GetFutureChip():
         self._major_institutional_trader = pd.read_csv(url, index_col=False)
 
     def get_twse_summary(self):
-        url = 'http://www.twse.com.tw/en/exchangeReport/MI_INDEX?response=json&date={}&type=MS'.format(
+        url = 'http://www.twse.com.tw/en/exchangeReport/MI_INDEX?response=json&date={}&type=IND'.format(
             self._date.replace('/', ''))
         r = requests.get(url)
         twse_summary = pd.DataFrame(
             r.json()['data1'],
-            columns=['index', 'close', 'dir', 'change', 'change_percent'])
+            columns=['index', 'close', 'dir', 'change', 'change_percent', 'note'])
         twse_summary.change[twse_summary.change == '--'] = 0
         twse_summary.change_percent[twse_summary.change_percent == '--'] = 0
         twse_summary.change_percent[twse_summary.change_percent == '---'] = 0
         twse_summary.change = twse_summary.change.astype(float) * np.sign(
             twse_summary.change_percent.astype(float))
-        self._twse_summary = twse_summary.drop(columns='dir')
+        self._twse_summary = twse_summary.drop(columns=['dir', 'note'])
 
     def __call__(self):
         try:
