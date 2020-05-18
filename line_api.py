@@ -240,6 +240,13 @@ def send_deal_message():
     line_bot_api.push_message(lineid, TextSendMessage(text=text))
     return 'ok'
 
+@app.route('/logistic')
+def send_logistic_message():
+    text = request.args['text']
+    userid = request.args['userid']
+    line_bot_api.push_message(userid, TextSendMessage(text=text))
+    return 'ok'
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
