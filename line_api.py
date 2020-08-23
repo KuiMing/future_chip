@@ -127,17 +127,17 @@ def tx():
 
 @app.route('/minidow_realtime')
 def minidow():
-    # try:
-    x = GetMinidowRealtime()
-    output = x.realtime_output()
-    template = realtime(output)
-    # except:
-    #     with open('config/now.json', 'r') as f:
-    #         template = json.load(f)
-    #         f.close()
-    #     template['body']['contents'][0]['text'] = 'Mini Dow'
-    #     template['body']['contents'][2]['contents'][0]['contents'][1][
-    #         'text'] = datetime.now().strftime("%H:%M:%S")
+    try:
+        x = GetMinidowRealtime()
+        output = x.realtime_output()
+        template = realtime(output)
+    except:
+        with open('config/now.json', 'r') as f:
+            template = json.load(f)
+            f.close()
+        template['body']['contents'][0]['text'] = 'Mini Dow'
+        template['body']['contents'][2]['contents'][0]['contents'][1][
+            'text'] = datetime.now().strftime("%H:%M:%S")
     return template
 
 
