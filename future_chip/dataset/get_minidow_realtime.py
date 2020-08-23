@@ -19,10 +19,11 @@ class GetMinidowRealtime(GetRealtime):
             html.content, 'html.parser', from_encoding='utf-8')
         quote.name = "miniDow"
 
-        links = soup.find_all("span", {
-            "class": 'Trsdu(0.3s)',
-            "data-reactid": "32"
-        })
+        links = soup.find_all(
+            "span", {
+                "class": 'Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)',
+                "data-reactid": "32"
+            })
         reg = re.compile('>.*<')
         match = reg.search(str(links[0]))
         quote.trade_price = float(match.group(0)[1:-1].replace(',', ''))
