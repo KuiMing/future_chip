@@ -127,17 +127,17 @@ def tx():
 
 @app.route('/minidow_realtime')
 def minidow():
-    try:
-        x = GetMinidowRealtime()
-        output = x.realtime_output()
-        template = realtime(output)
-    except:
-        with open('config/now.json', 'r') as f:
-            template = json.load(f)
-            f.close()
-        template['body']['contents'][0]['text'] = 'Mini Dow'
-        template['body']['contents'][2]['contents'][0]['contents'][1][
-            'text'] = datetime.now().strftime("%H:%M:%S")
+    # try:
+    x = GetMinidowRealtime()
+    output = x.realtime_output()
+    template = realtime(output)
+    # except:
+    #     with open('config/now.json', 'r') as f:
+    #         template = json.load(f)
+    #         f.close()
+    #     template['body']['contents'][0]['text'] = 'Mini Dow'
+    #     template['body']['contents'][2]['contents'][0]['contents'][1][
+    #         'text'] = datetime.now().strftime("%H:%M:%S")
     return template
 
 
@@ -196,10 +196,12 @@ def stock_query(code, temp):
     hour = datetime.now().hour + 8
     if hour < 14 and hour >= 9:
         change = round(
-            float(x['realtime']['latest_trade_price']) - float(stock.price[-1]), 2)
+            float(x['realtime']['latest_trade_price']) - float(
+                stock.price[-1]), 2)
     else:
         change = round(
-            float(x['realtime']['latest_trade_price']) - float(stock.price[-2]), 2)
+            float(x['realtime']['latest_trade_price']) - float(
+                stock.price[-2]), 2)
 
     if change < 0:
         color = '#2d8540'
@@ -239,6 +241,7 @@ def send_deal_message():
     text = request.args.get('text', 'dealed', type=str)
     line_bot_api.push_message(lineid, TextSendMessage(text=text))
     return 'ok'
+
 
 @app.route('/logistic')
 def send_logistic_message():
