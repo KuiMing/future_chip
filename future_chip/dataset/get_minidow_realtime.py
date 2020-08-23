@@ -48,13 +48,10 @@ class GetMinidowRealtime(GetRealtime):
         match = reg.search(str(links[0]))
         quote.high = match.group(0)[1:-1].replace(',', '')
 
-        links = soup.find_all(
-            "span", {
-                "class":
-                'Trsdu(0.3s) Fw(500) Pstart(10px) Fz(24px) C($positiveColor)',
-                "data-reactid":
-                "33"
-            })
+        links = soup.find_all("span", {
+            "class":
+            'Trsdu(0.3s) Fw(500) Pstart(10px) Fz(24px) C($positiveColor)'
+        })
         reg = re.compile('>.*<')
         match = reg.search(str(links[0]))
         quote.change = match.group(0)[1:-1].replace(',', '')
