@@ -21,13 +21,13 @@ class GetMinidowRealtime(GetRealtime):
 
         links = soup.find_all("span", {
             "class": 'Trsdu(0.3s)',
-            "data-reactid": "14"
+            "data-reactid": "32"
         })
         reg = re.compile('>.*<')
         match = reg.search(str(links[0]))
         quote.trade_price = float(match.group(0)[1:-1].replace(',', ''))
 
-        trade_time = soup.find_all("span", {"data-reactid": "18"})
+        trade_time = soup.find_all("div", {"id": 'quote-market-notice'})
         reg = re.compile('[0-9]*:[0-9]{2}[A-Z]{2}')
         trade_time = datetime.strptime(
             reg.search(str(trade_time[0])).group(0), "%I:%M%p")
@@ -35,13 +35,13 @@ class GetMinidowRealtime(GetRealtime):
 
         links = soup.find_all("span", {
             "class": 'Trsdu(0.3s)',
-            "data-reactid": "25"
+            "data-reactid": "52"
         })
         reg = re.compile('>.*<')
         match = reg.search(str(links[0]))
         quote.open = match.group(0)[1:-1].replace(',', '')
 
-        links = soup.find_all("td", {"data-test": "DAYS_RANGE-value"})
+        links = soup.find_all("td", {"data-reactid": '69'})
         reg = re.compile('>.*-')
         match = reg.search(str(links[0]))
         quote.low = match.group(0)[1:-1].replace(',', '').replace(' ', '')
@@ -50,11 +50,14 @@ class GetMinidowRealtime(GetRealtime):
         match = reg.search(str(links[0]))
         quote.high = match.group(0)[1:-1].replace(',', '')
 
-        links = soup.find_all("span", {
-            "class": 'Trsdu(0.3s)',
-            "data-reactid": "16"
-        })
-        reg = re.compile('>.* ')
+        links = soup.find_all(
+            "span", {
+                "class":
+                'Trsdu(0.3s) Fw(500) Pstart(10px) Fz(24px) C($positiveColor)',
+                "data-reactid":
+                "33"
+            })
+        reg = re.compile('>.*<')
         match = reg.search(str(links[0]))
         quote.change = match.group(0)[1:-1].replace(',', '')
         return quote
