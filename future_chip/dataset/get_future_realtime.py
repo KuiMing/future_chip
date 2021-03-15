@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import os
 import sys
 import pytz
+import json
 from .get_realtime import Quote, GetRealtime
 
 
@@ -14,28 +15,37 @@ class GetFutureRealtime(GetRealtime):
         tz = pytz.timezone(pytz.country_timezones('tw')[0])
         now = datetime.now(tz)
         AH = now.hour >= 15 or now.hour < 8
-        url_list = [
-            'http://info512.taifex.com.tw/EN/FusaQuote_Norl.aspx',
-            'http://info512ah.taifex.com.tw/EN/FusaQuote_Norl.aspx'
+        payload = [
+            '{"SymbolID":["TXFC1-F"]}',
+            '{"SymbolID":["TXFC1-M"]}'
         ]
-        self.url = url_list[AH]
-
+        self.url = "https://mis.taifex.com.tw/futures/api/getQuoteDetail"
+        self.payload = payload[AH]
+        
     def realtime_output(self):
-        html_data = requests.get(self.url)
-        soup = BeautifulSoup(markup=html_data.text, features='html.parser')
-        rows = soup.find_all('tr', {
-            "class": "custDataGridRow",
-            "bgcolor": "#DADBF7"
-        })
-        items = rows[0].find_all('td')
-        name = items[0].a.text.strip()
+        headers = {
+          'Content-Type': 'application/json;charset=UTF-8',
+        }
+        response = requests.request("POST", self.url, 
+                                    headers=headers, data=self.payload)
+        res = json.loads(response.text)['RtData']['QuoteList'][0]
+        
         quote = Quote()
-        quote.name = name
-        quote.trade_price = float(items[6].font.text.replace(',', ''))
-        quote.change = float(items[7].font.text.replace(',', ''))
-
-        quote.trade_time = datetime.strptime(items[14].font.text, "%H:%M:%S")
-        quote.open = float(items[10].font.text.replace(',', ''))
-        quote.high = float(items[11].font.text.replace(',', ''))
-        quote.low = float(items[12].font.text.replace(',', ''))
+        quote.name = res['DispEName']
+            
+        if res['CLastPrice'] == "":
+            quote.change = ""
+            quote.trade_price = ""
+            quote.open = ""
+            quote.high = ""
+            quote.low = ""
+            quote.trade_time = ""
+        else:
+            quote.trade_price = float(res['CLastPrice'])
+            quote.open = float(res['COpenPrice'])
+            quote.high = float(res['CHighPrice'])
+            quote.low = float(res['CLowPrice'])
+            quote.change = float(quote.trade_price) - float(quote.open)
+            quote.trade_time = datetime.strptime(res['CTime'], "%H%M%S")
         return quote
+
