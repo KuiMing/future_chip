@@ -6,7 +6,7 @@ from os import path
 
 from setuptools import find_packages, setup
 
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 # scripts = ['scripts/infercher', 'scripts/inferver', 'scripts/inferprof']
 
