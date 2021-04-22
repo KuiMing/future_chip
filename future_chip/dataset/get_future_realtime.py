@@ -16,8 +16,8 @@ class GetFutureRealtime(GetRealtime):
         now = datetime.now(tz)
         AH = now.hour >= 15 or now.hour < 8
         payload = [
-            '{"SymbolID":["TXFD1-F"]}',
-            '{"SymbolID":["TXFD1-M"]}'
+            '{"SymbolID":["TXFE1-F"]}',
+            '{"SymbolID":["TXFE1-M"]}'
         ]
         self.url = "https://mis.taifex.com.tw/futures/api/getQuoteDetail"
         self.payload = payload[AH]
