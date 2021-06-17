@@ -126,6 +126,8 @@ def tx():
     future.payload = json.dumps({"SymbolID":["TXF{}1-F".format(alphabet[month])]})
     try:
         output = future.realtime_output()
+        if output.trade_price == '':
+            future.payload = json.dumps({"SymbolID":["TXF{}1-F".format(alphabet[month + 1])]})
     except:
         future.payload = json.dumps({"SymbolID":["TXF{}1-F".format(alphabet[month + 1])]})
     output = future.realtime_output()
