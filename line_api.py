@@ -14,6 +14,7 @@ from linebot import (LineBotApi, WebhookHandler)
 from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             FlexSendMessage)
+import yfinance as yf
 from future_chip import FutureChipReport, Figure, GetFutureRealtime, GetMinidowRealtime
 
 app = Flask(__name__)
@@ -25,6 +26,16 @@ simulator_recorder = os.getenv('simulator_recorder')
 line_bot_api = LineBotApi(linet)
 handler = WebhookHandler(lines)
 
+class MiniDow():
+    def __init__(self, hist):
+        self.name = 'Mini Dow'
+        self.trade_time = datetime.now().strftime("%H:%M:%S")
+        self.trade_price = str(hist.Close.values[0])
+        self.open = str(hist.Open.values[0])
+        self.high = str(hist.High.values[0])
+        self.low = str(hist.Low.values[0])
+        self.change = str(hist.Close.values[0] - hist.Close.values[1])
+        
 
 @app.route('/')
 def TXO_chart():
@@ -138,9 +149,11 @@ def tx():
 @app.route('/minidow_realtime')
 def minidow():
     try:
-        x = GetMinidowRealtime()
-        output = x.realtime_output()
-        template = realtime(output)
+        ymf = yf.Ticker("YM=F")
+        hist = ymf.history(period="2d")
+        hist.reset_index(inplace=True)
+        hist.sort_values('Date', ascending=False, ignore_index=True, inplace=True)
+        output = MiniDow(hist)
     except:
         with open('config/now.json', 'r') as f:
             template = json.load(f)
