@@ -29,7 +29,7 @@ handler = WebhookHandler(lines)
 class MiniDow():
     def __init__(self, hist):
         self.name = 'Mini Dow'
-        self.trade_time = datetime.now().strftime("%H:%M:%S")
+        self.trade_time = datetime.now()
         self.trade_price = str(hist.Close.values[0])
         self.open = str(hist.Open.values[0])
         self.high = str(hist.High.values[0])
@@ -148,16 +148,14 @@ def tx():
 
 @app.route('/minidow_realtime')
 def minidow():
-    ymf = yf.Ticker("YM=F")
-    hist = ymf.history(period="5d")
-    hist.reset_index(inplace=True)
-    hist.sort_values('Date', ascending=False, inplace=True)
-    hist.reset_index(drop=True, inplace=True)
-    output = MiniDow(hist)
-    template = realtime(output)
-  
     try:
-        print('ok')
+        ymf = yf.Ticker("YM=F")
+        hist = ymf.history(period="5d")
+        hist.reset_index(inplace=True)
+        hist.sort_values('Date', ascending=False, inplace=True)
+        hist.reset_index(drop=True, inplace=True)
+        output = MiniDow(hist)
+        template = realtime(output)
     except:
         with open('config/now.json', 'r') as f:
             template = json.load(f)
