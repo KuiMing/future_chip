@@ -12,3 +12,4 @@ wget
 lxml
 Pillow
 twstock
+yfinance
