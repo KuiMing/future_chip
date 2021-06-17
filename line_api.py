@@ -3,6 +3,7 @@ import os
 from io import BytesIO
 import glob
 import json
+import string
 import time
 from PIL import Image
 import requests
@@ -119,8 +120,15 @@ def quotation():
 
 @app.route('/future_realtime')
 def tx():
-    x = GetFutureRealtime()
-    output = x.realtime_output()
+    future = GetFutureRealtime()
+    month = datetime.now().month - 1
+    alphabet = list(string.ascii_uppercase)
+    future.payload = json.dumps({"SymbolID":["TXF{}1-F".format(alphabet[month])]})
+    try:
+        output = future.realtime_output()
+    except:
+        future.payload = json.dumps({"SymbolID":["TXF{}1-F".format(alphabet[month + 1])]})
+    output = future.realtime_output()
     template = realtime(output)
     return template
 
