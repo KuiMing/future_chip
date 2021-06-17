@@ -154,6 +154,7 @@ def minidow():
         hist.reset_index(inplace=True)
         hist.sort_values('Date', ascending=False, ignore_index=True, inplace=True)
         output = MiniDow(hist)
+        template = realtime(output)
     except:
         with open('config/now.json', 'r') as f:
             template = json.load(f)
