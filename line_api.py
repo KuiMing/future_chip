@@ -151,7 +151,7 @@ def minidow():
   
     try:
         ymf = yf.Ticker("YM=F")
-        hist = ymf.history(period="2d")
+        hist = ymf.history(period="5d")
         hist.reset_index(inplace=True)
         hist.sort_values('Date', ascending=False, inplace=True)
         hist.reset_index(drop=True, inplace=True)
